@@ -1,0 +1,3 @@
+- Structured the app's files and folders that is similar to `Angular` and `React`.
+- Navigating the app using named routes.
+- Put duplicated codes and constants values inside `AppConstants` class.
