@@ -1,29 +1,29 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
+class Settings extends StatefulWidget {
+  Settings({Key key}) : super(key: key);
   
-  static const String title = 'Home';
+  static const String title = 'Settings';
 
   @override
-  _HomeState createState() => _HomeState();
+  _SettingsState createState() => _SettingsState();
 }
 
-class _HomeState extends State<Home> {  
+class _SettingsState extends State<Settings> {  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Home.title),
+        title: Text(Settings.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'This is Home page.',
+              'This is Settings page.',
             ),
           ],
         ),

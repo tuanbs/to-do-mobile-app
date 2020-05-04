@@ -1,3 +1,3 @@
-- Structured the app's files and folders that is similar to `Angular` and `React`.
-- Navigating the app using named routes.
-- Put duplicated codes and constants values inside `AppConstants` class.
+- Created another component named `Settings` with basic UI.
+- Implemented `Bottom Navigation Bar` (tab bar) with iOS style and put it into a component named `AppTabBar`.
+- Using `enum` instead of `index` to make the code more human-readable.
