@@ -1,3 +1,4 @@
-- Created another component named `Settings` with basic UI.
-- Implemented `Bottom Navigation Bar` (tab bar) with iOS style and put it into a component named `AppTabBar`.
-- Using `enum` instead of `index` to make the code more human-readable.
+- Created the pre-populated database named `to_do_mobile.db`.
+- Instead necessary packages to support `Sqlite` in this app.
+- Created `AppDbContextService` to init the database.
+- Implemented Dependency Injections (DI) design pattern to inject the database service into the app.

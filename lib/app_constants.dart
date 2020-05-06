@@ -20,4 +20,6 @@ class AppConstants {
   // static const double paddingLevel1 = 8.0;
   // static const double paddingLevel2 = 16.0;
   //#end-region.
+
+  static const String databaseName = 'to_do_mobile.db';
 }

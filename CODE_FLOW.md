@@ -421,17 +421,153 @@ What we have done so far:
 - Using `enum` instead of `index` to make the code more human-readable.
 
 
-## Create `/assets/images` folder.
+-------------------------------------------------- Draft.
 
-Put necessary images inside this folder and import them by editing `pubspec.yaml` file as following:
+## Create pre-populated database.
+
+Use .Net Core to define and generate db script for Sqlite.
+
+Download `DB Browser for Sqlite`. -> Use this app to create new db named `to_do_mobile.db` by executing the script. -> Then put this db in `assets/database/to_do_mobile.db`.
+
+Specify the asset(s) in your `pubspec.yaml` in the flutter section:
 ```yaml
-...
 flutter:
-  uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/images/facebook-logo.png
-    - assets/images/google-logo.png
-...
+    - assets/database/to_do_mobile.db
 ```
+
+In order to use `Sqlite` in this app, we need to add the following packages in `pubspec.yaml` file:
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+
+  sqflite: 1.3.0+1
+  path_provider: 1.6.7
+  path: 1.6.4
+  intl: 0.16.1
+```
+
+Add the database's name in `AppConstants` class:
+```dart
+#### /lib/app_constants.dart
+static const String databaseName = 'to_do_mobile.db';
+```
+
+Create the service named `AppDbContextService` in the `lib/shared/services` folder:
+```dart
+#### `lib/shared/services/app_db_context_service.dart`
+
+import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
+import 'package:to_do_mobile_app/app_constants.dart';
+
+class AppDbContextService {
+  String _databasesPath;
+  Database _db;
+
+  AppDbContextService() {}
+
+  //#region Helpers.
+  //#end-region.
+
+  Future<void> initDb() async {
+    _databasesPath = await getDatabasesPath();
+    _databasesPath = join(_databasesPath, AppConstants.databaseName);
+
+    // Check if the database exists.
+    bool exists = await databaseExists(_databasesPath);
+
+    if (!exists) {
+      // Should happen only the first time when you launch your app.
+      debugPrint("Database not exist. Creating new copy from assets.");
+
+      // Make sure the parent directory exists.
+      try {
+        await Directory(dirname(_databasesPath)).create(recursive: true);
+
+        // Copy from asset.
+        ByteData data = await rootBundle.load(join("assets/database", AppConstants.databaseName));
+        List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        
+        // Write and flush the bytes written.
+        await File(_databasesPath).writeAsBytes(bytes, flush: true);
+      } catch (e) {
+        debugPrint('Exception in AppDbContextService.initDb(). e is: $e');
+      }
+    } else {
+      debugPrint("Database already exists.");
+    }
+    // open the database.
+    _db = await openDatabase(_databasesPath);
+    debugPrint('initDb successfully. _databasesPath is: $_databasesPath');
+  }
+}
+```
+
+Next step is to implement the Dependency Injection (DI) design pattern to inject the `AppDbContext` service.
+
+## Dependency Injection.
+
+In order to use DI in this app, we need to add the package `get_it` into `pubspec.yaml`:
+```yaml
+get_it: 4.0.2
+```
+
+Create `AppInjections` class to register the services we want to inject in this app:
+```dart
+#### `/lib/app_injections.dart`
+
+import 'package:get_it/get_it.dart';
+
+import 'package:to_do_mobile_app/shared/services/app_db_context_service.dart';
+
+final GetIt getIt = GetIt.instance;
+
+class AppInjections {
+  static Future<void> setupDI() async {
+    // Register services.
+    getIt.registerSingletonAsync<AppDbContextService>(() async {
+      final appDbContextService = AppDbContextService();
+      await appDbContextService.initDb();
+      return appDbContextService;
+    });
+  }
+}
+```
+
+Then call the method `setupDI` in `main.dart` to setup DI:
+```dart
+#### `lib/main.dart`
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure that the Flutter app initializes properly before initializing other configurations.
+  
+  var myApp = MyApp();
+  await AppInjections.setupDI();
+  
+  runApp(myApp);
+}
+```
+
+Now when you run your app (on iOS), you should see the log console like so:
+```bash
+flutter: Database not exist. Creating new copy from assets.
+flutter: initDb successfully. _databasesPath is: <path_to_database>/Documents/to_do_mobile.db
+```
+
+You can use `DB Browser` to open the db in `<path_to_database>/Documents/to_do_mobile.db` and check to see if it's the same as the pre-populated DB in the `assets/database/to_do_mobile.db`.
+
+## Summary.
+
+What we have done so far:
+- Created the pre-populated database named `to_do_mobile.db`.
+- Instead necessary packages to support `Sqlite` in this app.
+- Created `AppDbContextService` to init the database.
+- Implemented Dependency Injections (DI) design pattern to inject the database service into the app.

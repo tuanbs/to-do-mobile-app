@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+
+import 'package:to_do_mobile_app/app_injections.dart';
 import 'package:to_do_mobile_app/my_app.dart';
 
 void main() async {
-  // WidgetsFlutterBinding.ensureInitialized(); // Fix [issue](https://stackoverflow.com/questions/57689492/flutter-unhandled-exception-servicesbinding-defaultbinarymessenger-was-accesse) after upgrading Flutter SDK from 1.9 to 1.12.
+  WidgetsFlutterBinding.ensureInitialized(); // Ensure that the Flutter app initializes properly before initializing other configurations.
   
   var myApp = MyApp();
   // await AppGlobals.init(myAppNavigatorKeyParam: myApp.navigatorKey);
-  // AppInjections.setupDI();
+  await AppInjections.setupDI();
   
   runApp(myApp);
 }

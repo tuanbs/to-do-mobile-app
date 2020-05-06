@@ -2,6 +2,8 @@
     "cSpell.words": [
         "lifecycle",
         "pubspec",
-        "stateful"
+        "sqflite",
+        "stateful",
+        "uint"
     ]
 }
