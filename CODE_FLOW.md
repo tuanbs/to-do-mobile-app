@@ -587,20 +587,20 @@ Create a `ToDo` model to capture the to-do item:
 #### `lib/shared/models/to_do_model.dart`
 
 class ToDo {
-  final String idColumn = 'Id';
-  final String createdDateColumn = 'CreatedDate';
-  final String descriptionColumn = 'Description';
-  final String guidColumn = 'Guid';
-  final String isDeletedColumn = 'IsDeleted';
-  final String isDoneColumn = 'IsDone';
-  final String updatedDateColumn = 'UpdatedDate';
+  static final String idColumn = 'Id';
+  static final String createdDateColumn = 'CreatedDate';
+  static final String descriptionColumn = 'Description';
+  static final String guidColumn = 'Guid';
+  static final String isDeletedColumn = 'IsDeleted';
+  static final String isDoneColumn = 'IsDone';
+  static final String updatedDateColumn = 'UpdatedDate';
 
   int id;
   String createdDate;
   String description;
   String guid;
-  bool isDeleted;
-  bool isDone;
+  int isDeleted; // NOTE: bool is not supported by Sqlite.
+  int isDone;
   String updatedDate;
 
   ToDo(
@@ -617,8 +617,8 @@ class ToDo {
     createdDate = json[createdDateColumn];
     description = json[descriptionColumn];
     guid = json[guidColumn];
-    isDeleted = json[isDeletedColumn] ?? false;
-    isDone = json[isDoneColumn] ?? false;
+    isDeleted = json[isDeletedColumn] ?? 0;
+    isDone = json[isDoneColumn] ?? 0;
     updatedDate = json[updatedDateColumn];
   }
 
