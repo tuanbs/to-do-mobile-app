@@ -1,4 +1,4 @@
-- Created the pre-populated database named `to_do_mobile.db`.
-- Instead necessary packages to support `Sqlite` in this app.
-- Created `AppDbContextService` to init the database.
-- Implemented Dependency Injections (DI) design pattern to inject the database service into the app.
+- Added `rxdart` package to implement reactive programming using Observables.
+- Created `ToDoRepoService` and inject it into the app.
+- Logging the result in the log console by listening to the result changes.
+- Created the `ToDo` model to map the result from Sqlite db.

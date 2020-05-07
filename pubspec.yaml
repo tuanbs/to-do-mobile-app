@@ -32,7 +32,7 @@ dependencies:
   # provider: 4.0.5+1
   # dio: 3.0.9
   # shared_preferences: 0.5.7
-  # rxdart: 0.24.0
+  rxdart: 0.24.0
   get_it: 4.0.2 # For Dependency Injection (DI).
 
 dev_dependencies:

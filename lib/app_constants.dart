@@ -22,4 +22,5 @@ class AppConstants {
   //#end-region.
 
   static const String databaseName = 'to_do_mobile.db';
+  static const String tableTodoName = 'ToDos';
 }

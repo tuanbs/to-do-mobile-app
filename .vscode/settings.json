@@ -3,6 +3,7 @@
         "lifecycle",
         "pubspec",
         "sqflite",
+        "sqlite",
         "stateful",
         "uint"
     ]

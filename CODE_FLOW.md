@@ -84,8 +84,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
-  Home({Key key}) : super(key: key);
-  
   static const String title = 'Home';
 
   @override
@@ -452,6 +450,7 @@ Add the database's name in `AppConstants` class:
 ```dart
 #### /lib/app_constants.dart
 static const String databaseName = 'to_do_mobile.db';
+static const String tableTodoName = 'ToDos';
 ```
 
 Create the service named `AppDbContextService` in the `lib/shared/services` folder:
@@ -532,12 +531,14 @@ final GetIt getIt = GetIt.instance;
 
 class AppInjections {
   static Future<void> setupDI() async {
+    final appDbContextService = AppDbContextService();
     // Register services.
     getIt.registerSingletonAsync<AppDbContextService>(() async {
-      final appDbContextService = AppDbContextService();
-      await appDbContextService.initDb();
       return appDbContextService;
     });
+
+    // Wait for db initialization.
+    await appDbContextService.initDb();
   }
 }
 ```
@@ -568,6 +569,244 @@ You can use `DB Browser` to open the db in `<path_to_database>/Documents/to_do_m
 
 What we have done so far:
 - Created the pre-populated database named `to_do_mobile.db`.
-- Instead necessary packages to support `Sqlite` in this app.
+- Installed necessary packages to support `Sqlite` in this app.
 - Created `AppDbContextService` to init the database.
 - Implemented Dependency Injections (DI) design pattern to inject the database service into the app.
+
+## Show list of to-do items.
+
+In this part, we're going to use `repository` pattern to do the CRUD operations and `rxdart` package to implement `reactive programming` to handle `single source of truth`.
+
+Add the `rxdart` package into `pubspec.yaml`:
+```yaml
+rxdart: 0.24.0
+```
+
+Create a `ToDo` model to capture the to-do item:
+```dart
+#### `lib/shared/models/to_do_model.dart`
+
+class ToDo {
+  final String idColumn = 'Id';
+  final String createdDateColumn = 'CreatedDate';
+  final String descriptionColumn = 'Description';
+  final String guidColumn = 'Guid';
+  final String isDeletedColumn = 'IsDeleted';
+  final String isDoneColumn = 'IsDone';
+  final String updatedDateColumn = 'UpdatedDate';
+
+  int id;
+  String createdDate;
+  String description;
+  String guid;
+  bool isDeleted;
+  bool isDone;
+  String updatedDate;
+
+  ToDo(
+      {this.id,
+      this.createdDate,
+      this.description,
+      this.guid,
+      this.isDeleted,
+      this.isDone,
+      this.updatedDate});
+
+  ToDo.fromJson(Map<String, dynamic> json) {
+    id = json[idColumn];
+    createdDate = json[createdDateColumn];
+    description = json[descriptionColumn];
+    guid = json[guidColumn];
+    isDeleted = json[isDeletedColumn] ?? false;
+    isDone = json[isDoneColumn] ?? false;
+    updatedDate = json[updatedDateColumn];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data[idColumn] = this.id;
+    data[createdDateColumn] = this.createdDate;
+    data[descriptionColumn] = this.description;
+    data[guidColumn] = this.guid;
+    data[isDeletedColumn] = this.isDeleted;
+    data[isDoneColumn] = this.isDone;
+    data[updatedDateColumn] = this.updatedDate;
+    return data;
+  }
+}
+```
+
+Create `ToDoResourceParameters`:
+```dart
+#### `/lib/shared/parameters/to_do_resource_parameters.dart`
+
+class ToDoResourceParameters {
+  final String searchQuery;
+
+  ToDoResourceParameters({this.searchQuery});
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['searchQuery'] = this.searchQuery;
+    return data;
+  }
+}
+```
+
+Edit `AppDbContext`, add the following codes:
+```dart
+/* DataStore stuffs for ToDos. */
+List<ToDo> _toDos;
+
+List<ToDo> get toDos { return _toDos; }
+set toDos(List<ToDo> value) { _toDos = value ?? null; }
+```
+
+Create `ToDoRepoService` in `lib/shared/data/repositories`:
+```dart
+#### `/lib/shared/services/repositories/to_do_repo_service.dart`
+
+import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart' as rxdart;
+import 'package:to_do_mobile_app/app_constants.dart';
+
+import 'package:to_do_mobile_app/shared/models/to_do_model.dart';
+import 'package:to_do_mobile_app/shared/parameters/to_do_resource_parameters.dart';
+import 'package:to_do_mobile_app/shared/services/app_db_context_service.dart';
+import 'package:to_do_mobile_app/app_injections.dart';
+
+class ToDoRepoService {
+  var _toDosBehaviorSubject = rxdart.BehaviorSubject<List<ToDo>>();
+
+  Stream<List<ToDo>> get toDosObservable => _toDosBehaviorSubject.asBroadcastStream();
+
+  AppDbContextService _appDbContextService;
+
+  ToDoRepoService() {
+    _appDbContextService = _appDbContextService ?? getIt<AppDbContextService>();
+  }
+
+  Future getListAsync(ToDoResourceParameters toDoResourceParameters) async {
+    dynamic error;
+
+    try {
+      // Get data from local Sqlite Db. In the web app (like Angular or React), we get data by using `http`.
+      var readOnlyList = await _appDbContextService.database?.query(
+        AppConstants.tableTodoName, 
+        columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDeletedColumn], 
+        where: '${ToDo.isDeletedColumn} = ?', whereArgs: [0],
+      );
+      List<ToDo> list = readOnlyList?.map((item) => ToDo.fromJson(item))?.toList();
+      _appDbContextService.toDos = List<ToDo>.from(list); // Create a new map to modify it in memory.
+      // Notify to all listeners.
+      _toDosBehaviorSubject.add(_appDbContextService.toDos);
+      return Future.value();
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService getListAsync failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+}
+```
+
+Register `ToDoRepoService` in `AppInjections` class:
+```dart
+#### `/lib/app_injections.dart`
+
+class AppInjections {
+  static Future<void> setupDI() async {
+    // Register services.
+    ...
+
+    getIt.registerSingletonAsync<ToDoRepoService>(() async => ToDoRepoService());
+  }
+}
+```
+
+Edit `Home` component to get the to-do list:
+```dart
+#### `/lib/components/home/home.dart`
+
+import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:to_do_mobile_app/app_injections.dart';
+import 'package:to_do_mobile_app/shared/data/repositories/to_do_repo_service.dart';
+
+import 'package:to_do_mobile_app/shared/models/to_do_model.dart';
+
+class Home extends StatefulWidget {
+  static const String title = 'Home';
+
+  @override
+  _HomeState createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  StreamSubscription<List<ToDo>> _toDosObservableSubscriber;
+  List<ToDo> _toDos;
+
+  /* DI Services vars. */
+  ToDoRepoService _toDoRepoService;
+
+  _HomeState() {
+    /* DI Services. */
+    _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
+  }
+
+  //#region Lifecycle.
+  @override
+  void initState() {
+    super.initState();
+    _toDosObservableSubscriber = _toDoRepoService.toDosObservable.listen((data) {
+      debugPrint(json.encode(data));
+      _toDos = data;
+      if (_toDos != null) {
+        setState(() {});
+      }
+    });
+
+    this._getListAsync();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ...
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _toDosObservableSubscriber.cancel();
+  }
+  //#end-region.
+
+  Future _getListAsync() async {
+    try {
+      await _toDoRepoService.getListAsync(null);
+    } catch (e) {
+      debugPrint('_getListAsync failed.');
+    } finally {
+    }
+  }
+}
+```
+
+Now when you run the app, you should see the result of 3 rows printed in the log console like so:
+```bash
+flutter: Database already exists.
+flutter: initDb successfully. _databasesPath is: <...>/Documents/to_do_mobile.db
+flutter: [{"Id":1,"CreatedDate":null,"Description":"Learn Swift","Guid":"0a3b06dca81fcb47391996ed1f41e69a","IsDeleted":0,"IsDone":0,"UpdatedDate":null},{"Id":2,"CreatedDate":null,"Description":"Learn Flutter","Guid":"edd579c6d28b20951e62fc0316b41520","IsDeleted":0,"IsDone":0,"UpdatedDate":null},{"Id":3,"CreatedDate":null,"Description":"Learn .Net Core","Guid":"1616de86895b0075a9b00cc5f6fef06c","IsDeleted":0,"IsDone":0,"UpdatedDate":null}]
+```
+
+## Summary.
+
+What we have done so far:
+- Added `rxdart` package to implement reactive programming using Observables.
+- Created `ToDoRepoService` and inject it into the app.
+- Logging the result in the log console by listening to the result changes.
+- Created the `ToDo` model to map the result from Sqlite db.
+
+Next step is to show these 3 rows on the UI.
