@@ -205,7 +205,7 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-**Best Practice:**
+**Code improvements:**
 
 As you can see we use the string `/` to name the `Home` component's route in `MyApp` class, and then inside `AppRouting` class we repeat the `/` again to show the `Home` component. So it's better to put those constant values into one place, so that when we update it, it would reflect the change to all of its references. This approach also reduces the duplicated code amd makes the app more maintainable. Let's create a class named `AppConstants` in `/lib/app_constants.dart`:
 ```dart
@@ -350,12 +350,21 @@ class _AppTabBarState extends State<AppTabBar> {
 - `tabBar`: `CupertinoTabBar` requires at least two items, or you will see errors at run-time. Those tab items are shown at the bottom of the app.
 - `tabBuilder`: is responsible for making sure the specified tab is built. In this case, it calls a class constructor to set up each respective tab, wrapping all two in `CupertinoTabView` and `CupertinoPageScaffold`.
 
-Now, let's edit the `AppRouting` component and set the home path as `AppTabBar`:
+Now, let's edit the following classes:
+- In `AppConstant`, rename the `homePath` as `appTabBarPath`:
+- In `AppRouting`, replace the `Home` component with the `AppTabBar` component.
 ```dart
+#### `lib/app_constants.dart`
+class AppConstants {
+  ...
+  static const String appTabBarPath = '/';
+}
+
+#### `lib/app_routing.dart`
 class AppRouting {
     static Route<dynamic> generateAppRoute(RouteSettings settings) {
         switch (settings.name) {
-          case AppConstants.homePath:
+          case AppConstants.appTabBarPath:
             return CupertinoPageRoute(
               builder: (_) => AppTabBar(),
             );
@@ -369,7 +378,7 @@ class AppRouting {
 
 Run the app and you should see sth like this:
 
-![alt text](./docs/images/app-tab-bar.png "Title")
+![alt text](./docs/images/screenshots/app-tab-bar.png "Title")
 
 Try to tap the `Settings` tab to see the `Settings` page.
 
@@ -599,8 +608,8 @@ class ToDo {
   String createdDate;
   String description;
   String guid;
-  int isDeleted; // NOTE: bool is not supported by Sqlite.
-  int isDone;
+  bool isDeleted;
+  bool isDone;
   String updatedDate;
 
   ToDo(
@@ -617,20 +626,24 @@ class ToDo {
     createdDate = json[createdDateColumn];
     description = json[descriptionColumn];
     guid = json[guidColumn];
-    isDeleted = json[isDeletedColumn] ?? 0;
-    isDone = json[isDoneColumn] ?? 0;
+    isDeleted = json[isDeletedColumn] == 1;
+    isDone = json[isDoneColumn] == 1;
     updatedDate = json[updatedDateColumn];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data[idColumn] = this.id;
-    data[createdDateColumn] = this.createdDate;
-    data[descriptionColumn] = this.description;
-    data[guidColumn] = this.guid;
-    data[isDeletedColumn] = this.isDeleted;
-    data[isDoneColumn] = this.isDone;
-    data[updatedDateColumn] = this.updatedDate;
+    
+    if (id != null) {
+      data[idColumn] = id;
+    }
+    
+    data[createdDateColumn] = createdDate;
+    data[descriptionColumn] = description;
+    data[guidColumn] = guid;
+    data[isDeletedColumn] = isDeleted == true ? 1 : 0;
+    data[isDoneColumn] = isDone == true ? 1 : 0;
+    data[updatedDateColumn] = updatedDate;
     return data;
   }
 }
@@ -693,7 +706,7 @@ class ToDoRepoService {
       // Get data from local Sqlite Db. In the web app (like Angular or React), we get data by using `http`.
       var readOnlyList = await _appDbContextService.database?.query(
         AppConstants.tableTodoName, 
-        columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDeletedColumn], 
+        columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.isDeletedColumn], 
         where: '${ToDo.isDeletedColumn} = ?', whereArgs: [0],
       );
       List<ToDo> list = readOnlyList?.map((item) => ToDo.fromJson(item))?.toList();
@@ -754,6 +767,8 @@ class _HomeState extends State<Home> {
   _HomeState() {
     /* DI Services. */
     _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
+
+    _toDos = [];
   }
 
   //#region Lifecycle.
@@ -810,3 +825,562 @@ What we have done so far:
 - Created the `ToDo` model to map the result from Sqlite db.
 
 Next step is to show these 3 rows on the UI.
+
+## Show list on `Home` page.
+
+Edit the `build` method of `Home` component:
+```dart
+#### `/lib/components/home/home.dart`
+
+import 'package:intl/intl.dart';
+
+...
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Home.title),
+      ),
+      body: Center(
+        child: ListView(
+          children: _toDos?.map((item) {
+            return Dismissible(
+              key: Key(item?.id.toString()),
+              child: ListTile(
+                leading: IconButton(
+                  icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
+                  onPressed: () {},
+                ),
+                title: Text(                  
+                  item?.description ?? '',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                subtitle: Text(
+                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.updatedDate))}',
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle2,
+                ),
+                onTap: () {},
+              ),
+            );
+          })?.toList(),
+        )
+      ),
+    );
+  }
+
+  ...
+}
+```
+
+Then run the app and you should see the following UI:
+
+![alt text](./docs/images/screenshots/home-list.png "Title")
+
+**Code improvement: Use ListView.builder for a long list**
+
+When working with infinite lists or very long lists, it’s usually advisable to use a `ListView.builder` in order to improve performance. -> Why? -> Because the `ListView` constructor builds the whole list at once. But the `ListView.builder` creates a lazy list that when the users scroll down the list, Flutter builds widgets on-demand. Let's modify the `build` method like so:
+```dart
+#### `/lib/components/home/home.dart`
+
+...
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+
+  _HomeState() {
+    /* DI Services. */
+    _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
+
+    // _toDos = []; // Remove this line when using `ListView.builder`.
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Home.title),
+      ),
+      body: Center(
+        child: ListView.builder(
+          itemCount: _toDos == null ? 0 : _toDos.length,
+          itemBuilder: (BuildContext context, int index) {
+            ToDo item = _toDos[index];
+            return Dismissible(
+              ...
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  ...
+}
+```
+
+## Create a new to-do item.
+
+Edit the `build` method of `Home` component to add the `Add` button at the bottom:
+```dart
+#### `/lib/components/home/home.dart`
+
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        ...
+      ),
+      body: Center(
+        child: ListView.builder(
+          ...
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: 50.0), // Use padding because the bottom bar covers it.
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+}
+```
+
+Then run the app and you should see the following UI:
+
+![alt text](./docs/images/screenshots/home-list-add-button.png "Title")
+
+Next, let's create a new component named `AddToDo` with basic UI in `lib/components/add_to_do/add_to_do.dart` so that when users click the `Add` button, it'll get to this page. Also, we need to add a new constant value path for this component in `AppConstants`:
+```dart
+#### `lib/components/add_to_do/add_to_do.dart`
+
+import 'package:flutter/material.dart';
+
+import 'package:flutter/material.dart';
+
+class AddToDo extends StatefulWidget {
+  static const String title = 'AddToDo';
+
+  @override
+  _AddToDoState createState() => _AddToDoState();
+}
+
+class _AddToDoState extends State<AddToDo> {
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AddToDo.title),
+        actions: <Widget>[
+          FloatingActionButton(
+            child: Text('Done'),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.yellowAccent,
+            elevation: 0, // This is to hide the shadow.
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+            },
+          ),
+        ],
+      ),
+      body: GestureDetector( // Catch event when tapping outside.
+        onTap: () {
+          FocusScope.of(context).unfocus(); // Hide/ dismiss keyboard.
+        },
+        child: SafeArea(
+          minimum: const EdgeInsets.all(8),
+          child: Scrollbar(
+            child: ListView(
+              children: <Widget>[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Add to-do",
+                      hintText: "Add new to-do.",
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null, // To use auto wrap.
+                    // autofocus: true,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+#### `lib/app_constants.dart`
+
+class AppConstants {
+  ...
+  static const String addToDoPath = '/add-to-do';
+  ...
+}
+```
+
+Create `ToDoParameters` class in `lib/shared/parameters/to_do_parameters.dart`:
+```dart
+#### `lib/shared/parameters/to_do_parameters.dart`
+
+import 'package:to_do_mobile_app/shared/models/to_do_model.dart';
+
+class ToDoParameters {
+  final int id;
+
+  ToDoParameters({this.id});
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data[ToDo.idColumn] = this.id;
+    return data;
+  }
+}
+```
+
+Add new method named `generateAppTabBarRoute` inside `AppRouting` class:
+```dart
+#### `lib/app_routing.dart`
+
+class AppRouting {
+  /// Routing outside the `AppTabBar`.
+  static Route<dynamic> generateAppRoute(RouteSettings settings) {
+    ...
+  }
+
+  /// Routing inside the `AppTabBar`.
+  static Route<dynamic> generateAppTabBarRoute(RouteSettings settings) {
+    switch (settings.name) {
+      case AppConstants.addToDoPath:
+        return CupertinoPageRoute(
+          builder: (_) => AddToDo(),
+        );
+      default:
+        assert(false, 'No route defined for ${settings.name}');
+        return null;
+    }
+  }
+}
+```
+
+Then in `AppTabBar`, edit method `_buildCupertinoTabScaffold` to generate routes inside the `AppTabBar` for all tabs:
+```dart
+#### `lib/components/app_tab_bar/app_tab_bar.dart`
+
+class AppTabBar extends StatefulWidget {
+  ...
+}
+
+class _AppTabBarState extends State<AppTabBar> {
+  ...
+
+  //#region Helpers.
+  CupertinoTabScaffold _buildCupertinoTabScaffold() {
+    return CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        ...
+      ),
+      tabBuilder: (context, index) {
+        final tabItemLabel = _TabItemLabelEnum.values[index];
+        return CupertinoTabView(
+          builder: (context) {
+            ...
+          },
+          // Generate routes inside `AppTabBar` for all tabs.
+          onGenerateRoute: AppRouting.generateAppTabBarRoute,
+        );
+      },
+    );
+  }
+
+  ...
+  //#end-region.
+}
+```
+
+In `Home` component, add method `_navigateTo` which is called in `onPressed` event when the `Add` button clicked:
+```dart
+#### `lib/components/home/home.dart`
+
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        ...
+      ),
+      body: Center(
+        ...
+      ),
+      floatingActionButton: Padding(
+        ...
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            _navigateTo(null, AppConstants.addToDoPath);
+          },
+        ),
+      ),
+    );
+  }
+
+  ...
+
+  void _navigateTo(ToDo toDo, String componentPath) {
+    var queryParamsObj = ToDoParameters(id: toDo?.id);
+    Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
+  }
+  //#end-region.
+}
+```
+
+Run the app and click the `Add` button to get to the `AddToDo` component. After clicking `Add` button, you should see sth like so:
+
+![alt text](./docs/images/screenshots/home_add-to-do.png "Title")
+
+Next step is we need to save the new to-do item when tapping `Done` or `Back` button.
+
+## Add new item to database.
+
+In `pubspec.yaml`, add the package `uuid` to generate guid:
+```yaml
+#### `pubspec.yaml`
+
+...
+dependencies:
+  flutter:
+    sdk: flutter
+
+  ...
+  uuid: 2.0.4 # Generate Guid.
+...
+```
+
+In `ToDoRepoService`, add methods `addAsyncGet` and `addAsyncPost`:
+```dart
+#### `lib/shared/repositories/to_do_repo_service.dart`
+
+class ToDoRepoService {
+  ...
+
+  Future<ToDo> addAsyncGet() async {
+    dynamic error;
+
+    try {
+      // Get the empty to-do model. In the web app, we get it from the server API.
+      return Future.value(new ToDo(createdDate: DateTime.now().toUtc().toString(), guid: Uuid().v1(), updatedDate: DateTime.now().toUtc().toString()));
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService addAsyncGet failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+
+  Future<ToDo> addAsyncPost(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.insert(
+          AppConstants.tableTodoName,
+          paramObj.toJson(),
+        );
+        results = await batch.commit();
+        // debugPrint('results is: ${json.encode(results)}');
+      });
+      if (results != null) {
+        paramObj.id = results[0];
+        var list = List<ToDo>.from(_appDbContextService.toDos);
+        list.insert(0, paramObj);
+        _appDbContextService.toDos = list;
+        _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        return Future.value(paramObj);
+      }
+    } catch (e) {
+      error = e;
+      print('ToDoRepoService addAsyncPost failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+}
+```
+
+In `AddToDo`, inject `ToDoRepoService` and add methods `_addAsyncGet`, `_addAsyncPost` and `_validateAndSaveForm`, then call `_addAsyncPost` on adding new item. We also need to validate the description's value and capture it into the `ToDo` model in the `build` method:
+```dart
+#### `lib/components/add_to_do/add_to_do.dart`
+
+class AddToDo extends StatefulWidget {
+  ...
+}
+
+class _AddToDoState extends State<AddToDo> {
+  final _formKey = GlobalKey<FormState>();
+  ToDo _newToDo;
+
+  /* DI Services vars. */
+  ToDoRepoService _toDoRepoService;
+
+  _AddToDoState() {
+    /* DI Services. */
+    _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
+  }
+
+  //#region Lifecycle.
+  @override
+  void initState() {
+    super.initState();    
+
+    _addAsyncGet();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        ...
+      ),
+      body: GestureDetector(
+        onTap: () {
+          ...
+        },
+        child: SafeArea(
+          minimum: const EdgeInsets.all(8),
+          child: Scrollbar(
+            child: ListView(
+              children: <Widget>[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    ...
+                    validator: (value) => value.isNotEmpty ? null : 'Description can\'t be empty',
+                    onSaved: (value) => _newToDo.description = value?.trim(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //#region Helpers.
+  Future _addAsyncGet() async {
+    bool isOk = false; ToDo response;
+    
+    try {
+      ToDo res = await _toDoRepoService.addAsyncGet();
+      if (res != null) {
+        response = res;
+        isOk = true;
+      }
+    } catch (e) {
+      debugPrint('_addAsyncGet failed.');
+    } finally {
+      if (isOk) {
+        setState(() {
+          _newToDo = response;
+        });
+      }
+    }
+  }
+
+  Future _addAsyncPost() async {
+    if (!_validateAndSaveForm()) { return; }
+
+    bool isOk = false;
+    try {
+      ToDo copiedNewToDo = ToDo.fromJson(_newToDo.toJson());
+
+      ToDo res = await _toDoRepoService.addAsyncPost(copiedNewToDo);
+      isOk = true;
+    } catch (e) {
+      debugPrint('_addAsyncPost failed');
+    } finally {
+      if (isOk) {}
+    }
+  }
+
+  bool _validateAndSaveForm() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+  }
+  //#end-region.
+}
+```
+
+Run the app and try to add new item -> Then press `Done` button, it'll get back to the `Home` page and you should see the new item is added.
+
+**Code improvements**
+In `ToDoRepoService` class, let's modify method `getListAsync` to show the items based on the column `UpdatedDate` in descending order:
+```dart
+#### `lib/shared/repositories/to_do_repo_service.dart`
+
+class ToDoRepoService {
+  ...
+  Future getListAsync(ToDoResourceParameters toDoResourceParameters) async {
+    ...
+    var readOnlyList = await _appDbContextService.database?.query(
+      AppConstants.tableTodoName, 
+      columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+      where: '${ToDo.isDeletedColumn} = ?', whereArgs: [0],
+      orderBy: '${ToDo.updatedDateColumn} DESC'
+    );
+    ...
+  }
+}
+```
+
+## Summary.
+
+What we have done so far:
+- Showed the list on the `Home` component ordered by `UpdatedDate` column in the descending order.
+- Added new component `AddToDo` to implement the Create operation.
+
+Next step is to implement Read, Update and Delete operations.
+
+--------------------------------------------------
+
+# References:
+
+- [Flutter: Best Practices and Tips](https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5)

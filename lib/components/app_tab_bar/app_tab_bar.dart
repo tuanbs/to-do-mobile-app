@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:to_do_mobile_app/app_routing.dart';
 import 'package:to_do_mobile_app/components/home/home.dart';
 import 'package:to_do_mobile_app/components/settings/settings.dart';
 
@@ -45,6 +46,8 @@ class _AppTabBarState extends State<AppTabBar> {
                 return null;
             }
           },
+          // Generate routes inside `AppTabBar` for all tabs.
+          onGenerateRoute: AppRouting.generateAppTabBarRoute,
         );
       },
     );

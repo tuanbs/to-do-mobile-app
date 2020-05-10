@@ -1,4 +1,2 @@
-- Added `rxdart` package to implement reactive programming using Observables.
-- Created `ToDoRepoService` and inject it into the app.
-- Logging the result in the log console by listening to the result changes.
-- Created the `ToDo` model to map the result from Sqlite db.
+- Showed the list on the `Home` component ordered by `UpdatedDate` column in the descending order.
+- Added new component `AddToDo` to implement the Create operation.

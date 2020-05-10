@@ -11,8 +11,8 @@ class ToDo {
   String createdDate;
   String description;
   String guid;
-  int isDeleted; // NOTE: bool is not supported by Sqlite.
-  int isDone;
+  bool isDeleted;
+  bool isDone;
   String updatedDate;
 
   ToDo(
@@ -29,20 +29,24 @@ class ToDo {
     createdDate = json[createdDateColumn];
     description = json[descriptionColumn];
     guid = json[guidColumn];
-    isDeleted = json[isDeletedColumn] ?? 0;
-    isDone = json[isDoneColumn] ?? 0;
+    isDeleted = json[isDeletedColumn] == 1;
+    isDone = json[isDoneColumn] == 1;
     updatedDate = json[updatedDateColumn];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data[idColumn] = this.id;
-    data[createdDateColumn] = this.createdDate;
-    data[descriptionColumn] = this.description;
-    data[guidColumn] = this.guid;
-    data[isDeletedColumn] = this.isDeleted;
-    data[isDoneColumn] = this.isDone;
-    data[updatedDateColumn] = this.updatedDate;
+    
+    if (id != null) {
+      data[idColumn] = id;
+    }
+    
+    data[createdDateColumn] = createdDate;
+    data[descriptionColumn] = description;
+    data[guidColumn] = guid;
+    data[isDeletedColumn] = isDeleted == true ? 1 : 0;
+    data[isDoneColumn] = isDone == true ? 1 : 0;
+    data[updatedDateColumn] = updatedDate;
     return data;
   }
 }

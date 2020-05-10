@@ -28,6 +28,7 @@ dependencies:
   path_provider: 1.6.7
   path: 1.6.4
   intl: 0.16.1 # For DateTime formatting.
+  uuid: 2.0.4 # Generate Guid.
 
   # provider: 4.0.5+1
   # dio: 3.0.9

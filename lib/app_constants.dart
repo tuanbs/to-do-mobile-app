@@ -4,8 +4,8 @@ class AppConstants {
 
   //#region Route paths.
   // Outside `AppTabBar`.
-  static const String homePath = '/';
-  // static const String appTabBarPath = '/';
+  static const String appTabBarPath = '/';
+  static const String addToDoPath = '/add-to-do';
   // static const String loginPath = '/login';
   // static const String loginWithUsernameOrEmailPath = '/login-with-username-or-email';
   // static const String registerPath = '/register';

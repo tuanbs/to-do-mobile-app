@@ -6,12 +6,14 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    var _brightness = Brightness.light;
+
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: _brightness,
       ),
-      initialRoute: AppConstants.homePath,
+      initialRoute: AppConstants.appTabBarPath,
       onGenerateRoute: AppRouting.generateAppRoute,
       // home: Home(title: 'To Do Demo'),
     );
