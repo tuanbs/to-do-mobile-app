@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:to_do_mobile_app/app_globals.dart';
+import 'package:to_do_mobile_app/app_injections.dart';
+import 'package:to_do_mobile_app/shared/data/repositories/setting_repo_service.dart';
 
 class Settings extends StatefulWidget {
   Settings({Key key}) : super(key: key);
@@ -10,7 +13,16 @@ class Settings extends StatefulWidget {
   _SettingsState createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> {  
+class _SettingsState extends State<Settings> {
+  bool _switchBtnValue = AppGlobals.isDarkMode;
+
+  /* DI Services vars. */
+  SettingRepoService _settingRepoService;
+
+  _SettingsState() {
+    /* DI Services. */
+    _settingRepoService = _settingRepoService ?? getIt<SettingRepoService>();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +30,21 @@ class _SettingsState extends State<Settings> {
       appBar: AppBar(
         title: Text(Settings.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'This is Settings page.',
+      body: ListView(
+        children: <Widget>[
+          Card(
+            child: ListTile(
+              title: Text('Dark mode'),
+              trailing: Switch(
+                value: _switchBtnValue,
+                onChanged: (value) async {
+                  _switchBtnValue = value;
+                  await _settingRepoService.toggleIsDarkMode(isDarkMode: _switchBtnValue);
+                },
+              ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

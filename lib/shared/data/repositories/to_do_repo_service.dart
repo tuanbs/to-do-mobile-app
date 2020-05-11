@@ -28,9 +28,9 @@ class ToDoRepoService {
       // Get data from local Sqlite Db. In the web app (like Angular or React), we get data by using `http`.
       var readOnlyList = await _appDbContextService.database?.query(
         AppConstants.tableTodoName, 
-        columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+        columns: [ToDo.idColumn, ToDo.createdDateColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
         where: '${ToDo.isDeletedColumn} = ?', whereArgs: [0],
-        orderBy: '${ToDo.updatedDateColumn} DESC'
+        orderBy: '${ToDo.createdDateColumn} DESC'
       );
       List<ToDo> list = readOnlyList?.map((item) => ToDo.fromJson(item))?.toList();
       _appDbContextService.toDos = List<ToDo>.from(list); // Create a new map to modify it in memory.
@@ -49,7 +49,7 @@ class ToDoRepoService {
 
     try {
       // Get the empty to-do model. In the web app, we get it from the server API.
-      return Future.value(new ToDo(createdDate: DateTime.now().toUtc().toString(), guid: Uuid().v1(), updatedDate: DateTime.now().toUtc().toString()));
+      return Future.value(new ToDo(createdDate: DateTime.now().toUtc().toString(), guid: Uuid().v1(),));
     } catch (e) {
       error = e;
       debugPrint('ToDoRepoService addAsyncGet failed. error is: $error');
@@ -73,7 +73,7 @@ class ToDoRepoService {
         // debugPrint('results is: ${json.encode(results)}');
       });
       if (results != null) {
-        paramObj.id = results[0];
+        paramObj.id = results.first;
         var list = List<ToDo>.from(_appDbContextService.toDos);
         list.insert(0, paramObj);
         _appDbContextService.toDos = list;
@@ -85,5 +85,89 @@ class ToDoRepoService {
       print('ToDoRepoService addAsyncPost failed. error is: $error');
     }
     return Future.error(error);
+  }
+
+  Future<ToDo> updateGet(ToDo paramObj) async {
+    ToDo updatingItem; dynamic error;
+
+    try {
+      // Get the to-do model by guid. In the web app, we get it from the server API.
+      var readOnlyList = await _appDbContextService.database?.query(
+        AppConstants.tableTodoName, 
+        columns: [ToDo.descriptionColumn, ToDo.createdDateColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+        where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+      );
+      updatingItem = ToDo.fromJson(readOnlyList?.first);
+
+      if (updatingItem != null) {
+        return Future.value(updatingItem);
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService updateGet failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+
+  Future updatePost(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.update(
+          AppConstants.tableTodoName,
+          paramObj.toJson(),
+          where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+        );
+        results = await batch.commit();
+        // debugPrint('updatePost results is: ${json.encode(results)}');
+      });
+      if (results.first > 0) {
+        ToDo updatedItem = await updateGet(paramObj);
+        var updatingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == updatedItem.guid);
+        if (updatingItemIndex != -1) {
+          _appDbContextService.toDos[updatingItemIndex] = updatedItem;
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        return Future.value();
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService updatePost failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+
+  Future deletePost(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.delete(
+          AppConstants.tableTodoName,
+          where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+        );
+        results = await batch.commit();
+        // debugPrint('deletePost results is: ${json.encode(results)}');
+      });
+      if (results.first > 0) {
+        var deletingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == paramObj.guid);
+        if (deletingItemIndex != -1) {
+          _appDbContextService.toDos.removeAt(deletingItemIndex);
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        return Future.value();
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService deletePost failed. error is: $error');
+    }
+    return Future.error(error);    
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:to_do_mobile_app/app_constants.dart';
 import 'package:to_do_mobile_app/components/add_to_do/add_to_do.dart';
 import 'package:to_do_mobile_app/components/app_tab_bar/app_tab_bar.dart';
+import 'package:to_do_mobile_app/components/edit_to_do/edit_to_do.dart';
 
 class AppRouting {
   /// Routing outside the `AppTabBar`.
@@ -23,6 +24,10 @@ class AppRouting {
       case AppConstants.addToDoPath:
         return CupertinoPageRoute(
           builder: (_) => AddToDo(),
+        );
+      case AppConstants.editToDoPath:
+        return CupertinoPageRoute(
+          builder: (_) => EditToDo(toDoParameters: settings.arguments),
         );
       default:
         assert(false, 'No route defined for ${settings.name}');

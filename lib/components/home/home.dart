@@ -64,11 +64,15 @@ class _HomeState extends State<Home> {
           itemBuilder: (BuildContext context, int index) {
             ToDo item = _toDos[index];
             return Dismissible(
+              // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
               key: Key(item?.id.toString()),
               child: ListTile(
                 leading: IconButton(
                   icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
-                  onPressed: () {},
+                  onPressed: () {
+                    item.isDone = !item.isDone;
+                    _toggleIsDoneRadioBtn(item);
+                  },
                 ),
                 title: Text(
                   item?.description ?? '',
@@ -77,12 +81,23 @@ class _HomeState extends State<Home> {
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
                 subtitle: Text(
-                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.updatedDate))}',
+                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.createdDate))}',
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
-                onTap: () {},
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {
+                  _navigateTo(item, AppConstants.editToDoPath);
+                },
               ),
+              // Provide a function that tells the app what to do after an item has been swiped away.
+              onDismissed: (direction) async {
+                await _toDoRepoService.deletePost(item);
+                // Show a snackbar to indicate item deleted.
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text('Item of Id ${item?.id} deleted')));
+              },
+              // Show a red background as the item is swiped away.
+              background: Container(color: Colors.red,),
             );
           },
         ),
@@ -125,8 +140,27 @@ class _HomeState extends State<Home> {
   }
 
   void _navigateTo(ToDo toDo, String componentPath) {
-    var queryParamsObj = ToDoParameters(id: toDo?.id);
+    var queryParamsObj = ToDoParameters(id: toDo?.id, guid: toDo?.guid);
     Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
+  }
+
+  Future _toggleIsDoneRadioBtn(ToDo updatingToDo) async {
+    bool isOk = false;
+    try {
+      // await _dialogService.showSpinner();
+      ToDo copiedUpdatingToDo = ToDo.fromJson(updatingToDo.toJson());
+      debugPrint('copiedUpdatingToDo is: ${json.encode(copiedUpdatingToDo)}');
+
+      await _toDoRepoService.updatePost(copiedUpdatingToDo);
+      isOk = true;
+    } catch (e) {
+      debugPrint('_toggleCompleted failed');
+    } finally {
+      debugPrint('finally called.');
+      // await _dialogService.hideSpinner();
+      
+      if (isOk) {}
+    }
   }
   //#end-region.
 }

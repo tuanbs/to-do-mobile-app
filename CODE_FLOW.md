@@ -643,7 +643,7 @@ class ToDo {
     data[guidColumn] = guid;
     data[isDeletedColumn] = isDeleted == true ? 1 : 0;
     data[isDoneColumn] = isDone == true ? 1 : 0;
-    data[updatedDateColumn] = updatedDate;
+    data[updatedDateColumn] = DateTime.now().toUtc().toString(); // Need to be the current time before saving to Sqlite db.
     return data;
   }
 }
@@ -852,6 +852,7 @@ class _HomeState extends State<Home> {
         child: ListView(
           children: _toDos?.map((item) {
             return Dismissible(
+              // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
               key: Key(item?.id.toString()),
               child: ListTile(
                 leading: IconButton(
@@ -865,10 +866,11 @@ class _HomeState extends State<Home> {
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
                 subtitle: Text(
-                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.updatedDate))}',
+                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.createdDate))}',
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
+                trailing: Icon(Icons.keyboard_arrow_right),
                 onTap: () {},
               ),
             );
@@ -1054,12 +1056,14 @@ import 'package:to_do_mobile_app/shared/models/to_do_model.dart';
 
 class ToDoParameters {
   final int id;
+  final String guid;
 
-  ToDoParameters({this.id});
+  ToDoParameters({this.id, this.guid});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data[ToDo.idColumn] = this.id;
+    data[ToDo.guidColumn] = this.guid;
     return data;
   }
 }
@@ -1225,7 +1229,7 @@ class ToDoRepoService {
         // debugPrint('results is: ${json.encode(results)}');
       });
       if (results != null) {
-        paramObj.id = results[0];
+        paramObj.id = results.first;
         var list = List<ToDo>.from(_appDbContextService.toDos);
         list.insert(0, paramObj);
         _appDbContextService.toDos = list;
@@ -1352,7 +1356,7 @@ class _AddToDoState extends State<AddToDo> {
 Run the app and try to add new item -> Then press `Done` button, it'll get back to the `Home` page and you should see the new item is added.
 
 **Code improvements**
-In `ToDoRepoService` class, let's modify method `getListAsync` to show the items based on the column `UpdatedDate` in descending order:
+In `ToDoRepoService` class, let's modify method `getListAsync` to show the items based on the column `CreatedDate` in descending order:
 ```dart
 #### `lib/shared/repositories/to_do_repo_service.dart`
 
@@ -1362,9 +1366,9 @@ class ToDoRepoService {
     ...
     var readOnlyList = await _appDbContextService.database?.query(
       AppConstants.tableTodoName, 
-      columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+      columns: [ToDo.idColumn, ToDo.createdDateColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
       where: '${ToDo.isDeletedColumn} = ?', whereArgs: [0],
-      orderBy: '${ToDo.updatedDateColumn} DESC'
+      orderBy: '${ToDo.createdDateColumn} DESC'
     );
     ...
   }
@@ -1374,13 +1378,645 @@ class ToDoRepoService {
 ## Summary.
 
 What we have done so far:
-- Showed the list on the `Home` component ordered by `UpdatedDate` column in the descending order.
+- Showed the list on the `Home` component ordered by `CreatedDate` column in the descending order.
 - Added new component `AddToDo` to implement the Create operation.
 
 Next step is to implement Read, Update and Delete operations.
+
+## Implement Read and Update operations.
+
+For security reason, the Read, Update and Delete operations will be processed based on the `guid`, not `id` column.
+
+In `ToDoRepoService`, add methods `updateGet` and `updatePost`:
+```dart
+#### `lib/shared/repositories/to_do_repo_service.dart`
+
+class ToDoRepoService {
+  ...
+  Future<ToDo> updateGet(ToDo paramObj) async {
+    ToDo updatingItem; dynamic error;
+
+    try {
+      // Get the to-do model by guid. In the web app, we get it from the server API.
+      var readOnlyList = await _appDbContextService.database?.query(
+        AppConstants.tableTodoName, 
+        columns: [ToDo.descriptionColumn, ToDo.createdDateColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+        where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+      );
+      updatingItem = ToDo.fromJson(readOnlyList?.first);
+
+      if (updatingItem != null) {
+        return Future.value(updatingItem);
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService updateGet failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+
+  Future updatePost(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.update(
+          AppConstants.tableTodoName,
+          paramObj.toJson(),
+          where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+        );
+        results = await batch.commit();
+      });
+      if (results.first > 0) {
+        ToDo updatedItem = await updateGet(paramObj);
+        var updatingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == updatedItem.guid);
+        if (updatingItemIndex != -1) {
+          _appDbContextService.toDos[updatingItemIndex] = updatedItem;
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        return Future.value();
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService updatePost failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+}
+```
+
+Then create new component named `EditToDo` in `lib/components/edit_to_do/edit_to_do.dart`:
+```dart
+#### `lib/components/edit_to_do/edit_to_do.dart`
+
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:to_do_mobile_app/app_injections.dart';
+import 'package:to_do_mobile_app/shared/data/repositories/to_do_repo_service.dart';
+import 'package:to_do_mobile_app/shared/models/to_do_model.dart';
+import 'package:to_do_mobile_app/shared/parameters/to_do_parameters.dart';
+
+class EditToDo extends StatefulWidget {
+  static const String title = 'EditToDo';
+  final ToDoParameters toDoParameters;
+
+  EditToDo({@required this.toDoParameters}); // Capture the params sent from `Home` component.
+
+  @override
+  _EditToDoState createState() => _EditToDoState();
+}
+
+class _EditToDoState extends State<EditToDo> {
+  final _formKey = GlobalKey<FormState>();
+  ToDo _updatingToDo;
+
+  /* DI Services vars. */
+  ToDoRepoService _toDoRepoService;
+
+  _EditToDoState() {
+    /* DI Services. */
+    _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
+  }
+
+  //#region Lifecycle.
+  @override
+  void initState() {
+    super.initState();    
+
+    _updateGet(new ToDo(guid: widget.toDoParameters.guid));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(EditToDo.title),
+        actions: <Widget>[
+          FloatingActionButton(
+            child: Text('Save'),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.yellowAccent,
+            elevation: 0,
+            onPressed: () async {
+              FocusScope.of(context).unfocus();
+              _updatePost();
+            },
+          ),
+        ],
+      ),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          minimum: const EdgeInsets.all(8),
+          child: Scrollbar(
+            child: ListView(
+              children: <Widget>[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: TextEditingController(text: _updatingToDo?.description ?? '',),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Edit to-do",
+                      hintText: "Edit to-do.",
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    // autofocus: true,
+                    validator: (value) => value.isNotEmpty ? null : 'Description can\'t be empty',
+                    onSaved: (value) => _updatingToDo.description = value?.trim(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+  //#end-region.
+
+  //#region Helpers.
+  Future _updateGet(ToDo updatingToDo) async {
+    bool isOk = false; ToDo response;
+    
+    try {
+      ToDo res = await _toDoRepoService.updateGet(updatingToDo);
+      if (res != null) {
+        response = res;
+        isOk = true;
+      }
+    } catch (e) {
+      debugPrint('_updateGet failed.');
+    } finally {
+      print('finally called.');
+
+      if (isOk) {
+        setState(() {
+          _updatingToDo = response;
+        });
+      }
+    }
+  }
+
+  Future _updatePost() async {
+    if (!_validateAndSaveForm()) { return; }
+
+    bool isOk = false;
+    try {
+      ToDo copiedUpdatingToDo = ToDo.fromJson(_updatingToDo.toJson());
+
+      await _toDoRepoService.updatePost(copiedUpdatingToDo);
+      isOk = true;
+    } catch (e) {
+      debugPrint('_updatePost failed');
+    } finally {
+      debugPrint('finally called.');
+      
+      if (isOk) {
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  bool _validateAndSaveForm() {
+    final form = _formKey.currentState;
+    if (form.validate()) {
+      form.save();
+      return true;
+    }
+    return false;
+  }
+  //#end-region.
+}
+```
+
+In order to get to the `EditToDo` component, we need to modify the following classes:
+- In `AppConstants`, add new path for `EditToDo` component.
+- In `AppRouting`, add a new route to get to `EditToDo` component.
+- In `Home`, add event to get to `EditToDo` when users select an item to update.
+```dart
+#### `lib/app_constants.dart`
+
+class AppConstants {
+  ...
+  static const String editToDoPath = '/edit-to-do';
+  ...
+}
+
+#### `lib/app_routing.dart`
+
+class AppRouting {
+  ...
+  static Route<dynamic> generateAppTabBarRoute(RouteSettings settings) {
+    switch (settings.name) {
+      ...
+      case AppConstants.editToDoPath:
+        return CupertinoPageRoute(
+          builder: (_) => EditToDo(toDoParameters: settings.arguments),
+        );
+      ...
+    }
+  }
+}
+
+#### `lib/components/home/home.dart`
+
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        ...
+      ),
+      body: Center(
+        child: ListView.builder(
+          ...
+          itemBuilder: (BuildContext context, int index) {
+            ToDo item = _toDos[index];
+            return Dismissible(
+              ...
+              child: ListTile(
+                ...
+                onTap: () {
+                  _navigateTo(item, AppConstants.editToDoPath);
+                },
+              ),
+            );
+          },
+        ),
+      ),
+      ...
+    );
+  }
+  ...
+  void _navigateTo(ToDo toDo, String componentPath) {
+    var queryParamsObj = ToDoParameters(id: toDo?.id, guid: toDo?.guid);
+    Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
+  }
+}
+```
+
+The other Update operation is to allows users toggle the radio button at `Home` page as completed/ uncompleted, we need to add new method named `_toggleIsDoneRadioBtn` in `Home` component:
+```dart
+#### `lib/components/home/home.dart`
+
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        ...
+      ),
+      body: Center(
+        child: ListView.builder(
+          ...
+          itemBuilder: (BuildContext context, int index) {
+            ToDo item = _toDos[index];
+            return Dismissible(
+              ...
+              child: ListTile(
+                leading: IconButton(
+                  icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
+                  onPressed: () {
+                    item.isDone = !item.isDone;
+                    _toggleIsDoneRadioBtn(item);
+                  },
+                ),
+                ...
+              ),
+            );
+          },
+        ),
+      ),
+      ...
+    );
+  }
+  ...
+  Future _toggleIsDoneRadioBtn(ToDo updatingToDo) async {
+    bool isOk = false;
+    try {
+      ToDo copiedUpdatingToDo = ToDo.fromJson(updatingToDo.toJson());
+
+      await _toDoRepoService.updatePost(copiedUpdatingToDo);
+      isOk = true;
+    } catch (e) {
+      debugPrint('_toggleCompleted failed');
+    } finally {
+      debugPrint('finally called.');
+      
+      if (isOk) {}
+    }
+  }
+}
+```
+
+Run the app and try to select an item to get to `EditToDo` page. -> Update the description and press `Save` button. -> You should see the selected item updated with new content. -> At `Home` page, try to toggle the radio button to see item updated.
+
+## Implement Delete operation
+
+Users can delete the item by swiping to the item to the left. In `ToDoRepoService` class, add new method named `deletePost`:
+```dart
+#### `lib/shared/data/repositories/to_do_repo_service.dart`
+
+class ToDoRepoService {
+  ...
+  Future deletePost(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.delete(
+          AppConstants.tableTodoName,
+          where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+        );
+        results = await batch.commit();
+      });
+      if (results.first > 0) {
+        var deletingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == paramObj.guid);
+        if (deletingItemIndex != -1) {
+          _appDbContextService.toDos.removeAt(deletingItemIndex);
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        return Future.value();
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService deletePost failed. error is: $error');
+    }
+    return Future.error(error);    
+  }
+}
+```
+
+Then in `Home` component, edit the `build` method to implement swipe to delete:
+```dart
+#### `lib/components/home/home.dart`
+
+class Home extends StatefulWidget {
+  ...
+}
+
+class _HomeState extends State<Home> {
+  ...
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      ...
+      body: Center(
+        child: ListView.builder(
+          ...
+          itemBuilder: (BuildContext context, int index) {
+            ToDo item = _toDos[index];
+            return Dismissible(
+              // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
+              key: Key(item?.id.toString()),
+              child: ListTile(
+                ...
+              ),
+              // Provide a function that tells the app what to do after an item has been swiped away.
+              onDismissed: (direction) async {
+                await _toDoRepoService.deletePost(item);
+                // Show a snackbar to indicate item deleted.
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text('Item of Id ${item?.id} deleted')));
+              },
+              // Show a red background as the item is swiped away.
+              background: Container(color: Colors.red,),
+            );
+          },
+        ),
+      ),
+      ...
+  }
+  ...
+}
+```
+
+Run the app and try to swipe left/ right to delete item.
+
+## Toggle light/ dark mode in Setting page.
+
+In this section, I'm going to show you how to organize global variables in a class named `AppGlobals`. Some of the examples of global variables are that we can put into this class the data of user profile and app's settings which are shared across the entire app. I'm going to use the `Settings` component to show the demo of this. This component allows users to turn on/ off the dark mode and we'll keep this setting in a persistent store (local disk which is similar to cookies on web app) using a package named `shared_preferences`. Let's install it:
+```yaml
+#### `pubspec.yaml`
+...
+dependencies:
+  flutter:
+    sdk: flutter
+
+  ...
+  shared_preferences: 0.5.7+1 # Provide a persistent store for simple data.
+...
+```
+
+Then we need to make the following changes:
+- Create a new class named `AppGlobals` with global stuffs and keep them in local storage.
+- Update `main.dart` file to initialize some global stuffs in `AppGlobals` before running the app.
+- Create a new service named `SettingRepoService` class to broadcast the setting's changes to the entire app.
+- Update `AppInjections` class to register `SettingRepoService`.
+- Update the `Settings` component to inject `SettingRepoService` and allow users to turn on/ off the dark mode.
+- Convert `MyApp` from `stateless` component into `stateful` component and listen to the setting's changes.
+
+```dart
+#### `lib/app_globals.dart`
+
+...
+class AppGlobals {
+  static SharedPreferences _localStorage;
+  static SharedPreferences get localStorage {
+    return _localStorage;
+  }
+
+  static bool isDarkMode = localStorage.getBool(AppConstants.isDarkModeKey) ?? false;
+  static Future<void> setIsDarkModeSettingInLocalStorage(bool isDarkMode) async {
+    await localStorage.setBool(AppConstants.isDarkModeKey, isDarkMode);
+  }
+
+  static Future init() async {
+    try {
+      _localStorage = await SharedPreferences.getInstance();
+    } catch (e) {
+      debugPrint('Exception in AppGlobals.init(). e is: $e');
+    }
+  }
+}
+
+#### `lib/main.dart`
+
+...
+void main() async {
+  ...
+  await AppGlobals.init();
+  ...
+}
+
+### `lib/shared/data/repositories/setting_repo_service.dart`
+
+import 'package:flutter/foundation.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:to_do_mobile_app/app_globals.dart';
+
+class SettingRepoService {
+  BehaviorSubject _isDarkModeSettingBehaviorSubject = BehaviorSubject<bool>();
+  Stream<bool> get isDarkModeSettingObservable => _isDarkModeSettingBehaviorSubject.asBroadcastStream();
+
+  Future toggleIsDarkMode({bool isDarkMode = false}) async {
+    dynamic error;
+
+    try {
+      // Save isDarkMode setting to local storage.
+      await AppGlobals.setIsDarkModeSettingInLocalStorage(isDarkMode);
+      _isDarkModeSettingBehaviorSubject.add(isDarkMode);
+      return Future.value();
+    } catch (e) {
+      error = e;
+      debugPrint('SettingRepoService SettingRepoService failed. error is: $error');
+    }
+    return Future.error(error);
+  }
+}
+
+#### `lib/app_injections.dart`
+
+class AppInjections {
+  static Future<void> setupDI() async {
+    ...
+    getIt.registerSingletonAsync<SettingRepoService>(() async => SettingRepoService());
+  }
+}
+
+#### `lib/components/settings/settings.dart`
+
+...
+class Settings extends StatefulWidget {
+  ...
+}
+
+class _SettingsState extends State<Settings> {
+  bool _switchBtnValue = AppGlobals.isDarkMode;
+
+  /* DI Services vars. */
+  SettingRepoService _settingRepoService;
+
+  _SettingsState() {
+    /* DI Services. */
+    _settingRepoService = _settingRepoService ?? getIt<SettingRepoService>();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(Settings.title),
+      ),
+      body: ListView(
+        children: <Widget>[
+          Card(
+            child: ListTile(
+              title: Text('Dark mode'),
+              trailing: Switch(
+                value: _switchBtnValue,
+                onChanged: (value) async {
+                  _switchBtnValue = value;
+                  await _settingRepoService.toggleIsDarkMode(isDarkMode: _switchBtnValue);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+#### `lib/my_app.dart`
+
+class MyApp extends StatefulWidget {
+  ...
+}
+
+class _MyAppState extends State<MyApp> {
+  StreamSubscription<dynamic> _isDarkModeSettingObservableSubscriber;
+  bool _isDarkMode = AppGlobals.isDarkMode;
+
+  /* DI Services vars. */
+  SettingRepoService _settingRepoService;
+
+  _MyAppState() {
+    /* DI Services. */
+    _settingRepoService = _settingRepoService ?? getIt<SettingRepoService>();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _isDarkModeSettingObservableSubscriber = _settingRepoService.isDarkModeSettingObservable.listen((_switchBtnValue) {
+      setState(() {
+        _isDarkMode = _switchBtnValue;
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      ...
+      theme: ThemeData(
+        brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+      ),
+      ...
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _isDarkModeSettingObservableSubscriber.cancel();
+  }
+}
+```
+
+Run the app and try to enable dark mode in `Settings` page, you should see the dark theme applied. -> Try to close and open the app again, you'll see the app still in dark theme as it keeps the setting value in persistent store using `shared_preferences`:
+
+![alt text](./docs/images/screenshots/home-list-dark.png "Title")
+![alt text](./docs/images/screenshots/settings-dark.png "Title")
+
+## Summary.
+
+What we have done so far:
+- Implemented Read and Update operations.
+- Implemented Delete operation.
+- Allow users to toggle the light/ dark mode for the entire app in Settings page and keep this setting value in local storage using `shared_preferences` package.
+
+## Conclusion.
+
+Woa, we finish the app and I hope you enjoy this article. Please leave some comments if you think we can improve it better so that we can learn from each other. Thanks.
 
 --------------------------------------------------
 
 # References:
 
 - [Flutter: Best Practices and Tips](https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5)
+- [AngularAngular Observable Data Services](https://coryrylan.com/blog/angular-observable-data-services)

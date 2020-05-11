@@ -6,6 +6,7 @@ class AppConstants {
   // Outside `AppTabBar`.
   static const String appTabBarPath = '/';
   static const String addToDoPath = '/add-to-do';
+  static const String editToDoPath = '/edit-to-do';
   // static const String loginPath = '/login';
   // static const String loginWithUsernameOrEmailPath = '/login-with-username-or-email';
   // static const String registerPath = '/register';
@@ -23,4 +24,6 @@ class AppConstants {
 
   static const String databaseName = 'to_do_mobile.db';
   static const String tableTodoName = 'ToDos';
+
+  static const String isDarkModeKey = 'isDarkMode';
 }

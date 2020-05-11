@@ -46,7 +46,7 @@ class ToDo {
     data[guidColumn] = guid;
     data[isDeletedColumn] = isDeleted == true ? 1 : 0;
     data[isDoneColumn] = isDone == true ? 1 : 0;
-    data[updatedDateColumn] = updatedDate;
+    data[updatedDateColumn] = DateTime.now().toUtc().toString(); // Need to be the current time before saving to Sqlite db.
     return data;
   }
 }
