@@ -11,7 +11,7 @@ class AppGlobals {
   }
 
   //// Global stuffs for the `Settings`.
-  static bool isDarkMode = localStorage.getBool(AppConstants.isDarkModeKey) ?? false;
+  static bool isDarkMode = localStorage?.getBool(AppConstants.isDarkModeKey) ?? false;
   static Future<void> setIsDarkModeSettingInLocalStorage(bool isDarkMode) async {
     await localStorage.setBool(AppConstants.isDarkModeKey, isDarkMode);
   }
