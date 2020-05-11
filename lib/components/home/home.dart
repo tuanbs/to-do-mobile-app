@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
             ToDo item = _toDos[index];
             return Dismissible(
               // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
-              key: Key(item?.id.toString()),
+              key: Key(item?.guid.toString()),
               child: ListTile(
                 leading: IconButton(
                   icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
