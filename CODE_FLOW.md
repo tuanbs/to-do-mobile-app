@@ -1,6 +1,9 @@
 # Code flow of `to-do` app.
 
-This is the step-by-step instructions on how to create this app from scratch.
+This is the step-by-step instructions on how to create this app from scratch. The final app will look like this:
+
+![alt text](./docs/images/screenshots/iOS-demo.gif "Title")
+![alt text](./docs/images/screenshots/Android-demo.gif "Title")
 
 ## Table of contents.
   
