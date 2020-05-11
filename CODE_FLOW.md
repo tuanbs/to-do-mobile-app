@@ -6,82 +6,124 @@ This is the step-by-step instructions on how to create this app from scratch. Th
 ![alt text](./docs/images/screenshots/Android-demo.gif "Title")
 
 ## Table of contents.
-  
+
+1. [Introduction](#Introduction)
 1. [Prerequisites.](#Prerequisites)
 1. [Creating and installing dependencies.](#Creating-and-installing-dependencies.)
 
+## Introduction.
+
+Welcome to my first tutorial on how to write a cross-platform mobile app using `Flutter`. -> What is `Flutter`? -> Please check [here](https://flutter.dev/docs) to learn about it. -> In my words, it's a framework used to create cross-platform app (iOS, Android and Website). It's similar to `React Native` or `Ionic` frameworks if you've heard of them before.
+
+You would ask me the question why I choose `Flutter` instead of `React Native` or `Ionic`. Well, I used those 2 frameworks before and I don't like it. I'm not going to tell you the reasons why I don't like those 2 frameworks, otherwise the fans of those 2 frameworks would through their stones at me. I, however, will tell you the main reason why I choose it: that's because I come from `.Net` and `Angular` backgrounds, and I see I can reuse my knowledge and skills of `.Net` and `Angular` into `Flutter`. 
+
+For example, one of my hobby apps uses `.Net Core` for its back-end API, `Angular` for the website and `Flutter` for the mobile app. And I see I can reuse about 80% of the concepts from `.Net` and `Angular` into `Flutter` app. So I would like to share it in this tutorial.
+
+What you'll learn in this tutorial:
+- How to build a `To-do` app that runs on `iOS` and `Android`.
+- Reuse some concepts from `.Net` and `Angular` into `Flutter` app.
+
+> **NOTE:** In this tutorial, I'm going to create the app that will run based on the local database named `Sqlite`, so that it doesn't need to be connected to internet. The roadmap (if I have time) for this project is to make it similar to the `Notes` app on `iOS` devices, so that when it's connected to internet, it'll sync its local data with the server, and users can see their notes from different platforms (iOS, Android and website).
+
 ## Prerequisites.
 
+This tutorial is for everyone who has experience with at least one of the programming languages such as `C#, Java, Javascript etc...`. However it would be easier for you to follow along with the code if you posses the followings:
+
 - Basic understanding of `Flutter` and `Dart`.
-- Install the latest version of `Flutter` properly on your system.
+- Familiar with some front-end frameworks like `Angular` or `React`.
 
-## Creating and installing dependencies.
+To code along with the code-flow in this tutorial, please prepare the followings:
+- Install the latest version of `Flutter` properly on your system. If you don't know that, check [here](https://flutter.dev/docs) for more information.
+- Install Visual Studio Code (VS Code). You can use your preferred editor such as `Atom` or `Android Studio`.
 
-Run cmd `flutter create my_notes_flutter_mobile` to create this app.
+> **NOTE:** At the time of writing this tutorial, I use `Flutter` version `1.17.0` on macOS Catalina.
 
-Open `pubspec.yaml` file to include 3rd-party packages:
-```yaml
-...
-dependencies:
-  flutter:
-    sdk: flutter
-  provider: ^3.1.0 # The provider package for managing the state of the app.
-...
+Enough talking, let's create the app.
+
+## Create the initial `Flutter` app.
+
+To create the initial app, run cmd:
+```bash
+flutter create my_notes_flutter_mobile
 ```
 
-Then run `flutter pub get` to update packages.
+Open the app in `VS Code` and press `Ctrl + F5`, then make sure you see the initial screen of flutter app without any error before moving to next step.
 
-Open the app in `VS Code` and press `Ctrl + F5` -> Make sure you see the initial screen of flutter app with no error before moving to next step.
+## Folder structure:
 
-## Create the app's structure:
-
-I make this app's structure similar to the `Angular` app version:
+I make this app's folder structure similar to the `Angular` app version I created before:
 ```
-project
-│   README.md
-│   CODE_FLOW.md
-│   pubspec.yaml
-│
-└───assets
-│   
-└───docs
-│   │   user_manual.md
-│   │
-│   └───images
-│       │   home_screen.png
-│       │   ...
-│
-└───lib
-│   │   app_constants.dart
-│   │   app_routing.dart
-│   │   main.dart
-│   │   my_app.dart
-│   │
-│   └───components
-│   │   └───login
-│   │   │   │   login.dart
-│   │   │   │   ...
-│   │   └───home
-│   │       │   home.dart
-│   │       │   ...
-│   │
-│   └───shared
-│       └───components
-│       └───data
-│       │   └───repositories
-│       └───models
-│       └───services
-│   
-└───test
-    │   widget_test.dart
-    │   widget_test2.dart
+my_notes_flutter_mobile
+  assets/
+    database/
+      to_do_mobile.db
+    images/
+      ...
+  docs/
+    database_design/
+      ...
+    images/
+      ...
+  lib/
+    components/
+      add_to_do/
+        add_to_do.dart
+      app_tab_bar/
+        app_tab_bar.dart
+      edit_to_do/
+        edit_to_do.dart
+      home/
+        home.dart
+      settings/
+        settings.dart
+    shared/
+      components/
+        ...
+      data/
+        repositories/
+          setting_repo_service.dart
+          to_do_repo_service.dart
+      models/
+        to_do_model.dart
+      parameters/
+        to_do_parameters.dart
+        ...
+      services/
+        app_db_context_service.dart
+    app_constants.dart
+    app_globals.dart
+    app_injections.dart
+    app_routing.dart
+    main.dart
+    my_app.dart
+  test/
+    ...
+  README.md
+  CODE_FLOW.md
+  pubspec.yaml
+  ...
 ```
+
+### Explanations
+
+In `Angular` or `React` app, we use the concept of `component` to implement the separation of concerns in software development. We can use this `components` approach in `Flutter` app.
+
+> **NOTE:** I, however, encourage people to use whatever the folder structure they prefer as long as it makes sense to them. And try to use the similar structure into different frameworks regardless of what programming language those frameworks are using. This approach enables you as a software developer to maintain the apps easier without worrying learning different concepts for different structures.
+
+## Reorganize the initial app.
+
+In this step, we're going to reorganize the initial app into using our folder structure mentioned above.
 
 ### Create `Home` component.
 
-Open `main.dart` file and refactor `MyHonePage` into `Home` (in `VS Code` right-click class name and select `Rename Symbol`).
+Open `main.dart` file and refactor `MyHonePage` into `Home`.
 
-Move this `Home` component into `lib/components/home.dart` file. I prefer to set component's title inside component itself, so remove the `title` argument from its constructor:
+> **Tips:** To refactor class's name (or variables and methods) in `VS Code`, right-click on the class's name and select `Rename Symbol`. Then input the new name for it.
+
+Move this `Home` component into `lib/components/home.dart` file. By default, `Flutter` generates a new stateful component with the `title` argument inside its constructor. However, as we're not going to set component's title via its constructor, I prefer the title sticks inside its own component. So let's remove the `title` argument from its constructor like so:
+
+#### `lib/components/home.dart`
+
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -114,19 +156,20 @@ class _HomeState extends State<Home> {
     );
   }
 }
-``` 
+```
 
 ### Create `MyApp` component.
 
-Open `main.dart` and move `MyApp` class into `my_app.dart` file.
+Open `main.dart` and move `MyApp` class into `my_app.dart` file. Then import the `Home` component.
 
-Edit `MyHomePage` into `Home` and import the `Home` component.
-
-**NOTE:** To avoid potential issue, you should import with the prefix `package:<path_to_component>`. For example: `import 'package:to_do_mobile_app/components/home/home.dart';`
+> **NOTE:** To avoid potential issue, you should import with the prefix `package:<path_to_component>`. For example: `import 'package:to_do_mobile_app/components/home/home.dart';`
 
 ### Modify `main.app` file.
 
-Open `main.app` file and mark its main() function as `async`. We need this as `async` because we need have some configurations before running the app:
+Open `main.app` file and mark its `main()` function as `async` because we need to have some configurations before running the app:
+
+#### `lib/main.app`
+
 ```dart
 void main() async {
   var myApp = MyApp();
@@ -134,11 +177,14 @@ void main() async {
 }
 ```
 
-Now we're able to run the app using the new structure.
+Now we're able to run the app using our own new folder structure. Make sure there's no error before moving to next step.
 
-### Navigate with named route.
+## Navigate between components using named route.
 
-Similar to `Angular` and `React`, in `Flutter` we can show the component based on its route name. Here I'm using `onGenerateRoute` to define routes. Modify `MyApp` component as following:
+Similar to `Angular` and `React`, in `Flutter` we can show the component based on its route name. Here I'm using `onGenerateRoute` to define app's routes. Let's modify the `MyApp` component as following:
+
+#### `lib/my_app.dart`
+
 ```dart
 class MyApp extends StatelessWidget {
   @override
@@ -166,7 +212,10 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-As the app gets scaled, we would have lots of routes and business logic in each route. So it's a best practice to keep your code organized by separating the routes section into another class named `AppRouting`. This approach can also be used in `Angular` and `React`. Open `app_routing.dart` file and define the following routes:
+As the app gets scaled, we would have lots of routes and business logic in each route. So it's a best practice to separate the routes section into another class named `AppRouting`. This approach can also be used in `Angular` and `React`. Let's open `app_routing.dart` file and define the following routes:
+
+#### `lib/app_routing.dart`
+
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:to_do_mobile_app/components/home/home.dart';
@@ -187,6 +236,9 @@ class AppRouting {
 ```
 
 Then use this setting inside `MyApp` component as follow:
+
+#### `lib/my_app.dart`
+
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -202,15 +254,17 @@ class MyApp extends StatelessWidget {
       ),
       initialRoute: '/',
       onGenerateRoute: AppRouting.generateAppRoute,
-      // home: Home(title: 'To Do Demo'),
     );
   }
 }
 ```
 
-**Code improvements:**
+### Code improvements
 
-As you can see we use the string `/` to name the `Home` component's route in `MyApp` class, and then inside `AppRouting` class we repeat the `/` again to show the `Home` component. So it's better to put those constant values into one place, so that when we update it, it would reflect the change to all of its references. This approach also reduces the duplicated code amd makes the app more maintainable. Let's create a class named `AppConstants` in `/lib/app_constants.dart`:
+As you can see we use the string `/` to name the `Home` component's route in `MyApp` class. And then inside `AppRouting` class, we repeat the `/` again to show the `Home` component. So it's better to put those constant values into one place, so that when we update it, it would reflect the change to all of its references. This approach also reduces the duplicated code amd makes the app more maintainable. Let's create a class named `AppConstants`:
+
+#### `/lib/app_constants.dart`
+
 ```dart
 import 'package:flutter/widgets.dart';
 
@@ -220,13 +274,18 @@ class AppConstants {
 ```
 
 Then update the `MyApp` and `AppRouting` as follow:
-```dart
+
 #### `/lib/my_app.dart`
+
+```dart
 ...
 initialRoute: AppConstants.homePath,
 ...
+```
 
 #### `/lib/app_routing.dart`
+
+```dart
 switch (settings.name) {
     case AppConstants.homePath:
       return CupertinoPageRoute(
@@ -238,7 +297,7 @@ switch (settings.name) {
 }
 ```
 
-## Summary.
+### Summary:
 
 What we have done so far:
 - Structured the app's files and folders that is similar to `Angular` and `React`.
@@ -247,14 +306,15 @@ What we have done so far:
 
 ## Bottom Navigation Bar (Tab Bar)
 
-In this section, we're going to implement bottom navigation bar (tab bar) using Cupertino (iOS) style. -> Why not Android, but iOS style? Well, Android uses `Hierarchical Navigation` which users have to trace back to the root of the app in order to go to another tab. Imagine you're at the 5th view of the 1st tab, and in order to get to the 2nd tab, you have to press the `Back` button 5 times to get back to the root and select the 2nd tab. That's really annoying, right. -> So I prefer to use the iOS style bottom navigation which is called `Flat Navigation`. In flat navigation, users can jump between tabs without going back to the root of the app.
+In this section, we're going to implement bottom navigation bar (tab bar) using `Cupertino (iOS) style`.
 
-Anyway, talk is cheap, show me the code. Let's create 2 components named `Settings` and `AppTabBar`. The `AppTabBar` has 2 tabs `Home` and `Settings` which will show `Home` and `Settings` component respectively when it's tapped:
-```dart
+You would ask the question why not `Android`, but `iOS style`? Well, `Android` uses `Hierarchical Navigation` which users have to trace back to the root of the app in order to go to another tab. Imagine you're at the 5th view of the 1st tab, and in order to get to the 2nd tab, you have to press the `Back` button 5 times to get back to the root and select the 2nd tab. So I think that's really annoying. -> That's why I prefer to use the `iOS style` bottom navigation which is called `Flat Navigation`. In flat navigation, users can jump between tabs without going back to the root of the app.
+
+Let's create 2 components named `Settings` and `AppTabBar`. The `AppTabBar` has 2 tabs `Home` and `Settings` which will show `Home` and `Settings` component respectively when it's tapped:
+
 #### `lib/settings/settings.dart`
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
+```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -288,8 +348,11 @@ class _SettingsState extends State<Settings> {
     );
   }
 }
+```
 
 #### `lib/app_tab_bar/app_tab_bar.dart`
+
+```dart
 import 'package:flutter/cupertino.dart';
 import 'package:to_do_mobile_app/components/home/home.dart';
 import 'package:to_do_mobile_app/components/settings/settings.dart';
@@ -349,21 +412,27 @@ class _AppTabBarState extends State<AppTabBar> {
 }
 ```
 
-**Explanation:**
+### Explanations:
+
 - `tabBar`: `CupertinoTabBar` requires at least two items, or you will see errors at run-time. Those tab items are shown at the bottom of the app.
 - `tabBuilder`: is responsible for making sure the specified tab is built. In this case, it calls a class constructor to set up each respective tab, wrapping all two in `CupertinoTabView` and `CupertinoPageScaffold`.
 
 Now, let's edit the following classes:
-- In `AppConstant`, rename the `homePath` as `appTabBarPath`:
+- In `AppConstant`, refactor the `homePath` into `appTabBarPath`:
 - In `AppRouting`, replace the `Home` component with the `AppTabBar` component.
-```dart
+
 #### `lib/app_constants.dart`
+
+```dart
 class AppConstants {
   ...
   static const String appTabBarPath = '/';
 }
+```
 
 #### `lib/app_routing.dart`
+
+```dart
 class AppRouting {
     static Route<dynamic> generateAppRoute(RouteSettings settings) {
         switch (settings.name) {
@@ -379,21 +448,24 @@ class AppRouting {
 }
 ```
 
-Run the app and you should see sth like this:
+Run the app and you should see the following screen:
 
 ![alt text](./docs/images/screenshots/app-tab-bar.png "Title")
 
 Try to tap the `Settings` tab to see the `Settings` page.
 
-**Code improvement:**
+### Code improvements:
+
 Let's improve the code a little bit. Instead of using `index` number of tab item, we can make it human-readable by using `enum`. Add this line at the beginning of your class:
-```dart
+
 #### `lib/app_tab_bar/app_tab_bar.dart`
 
+```dart
 enum _TabItemLabelEnum { home, settings }
 ```
 
 Then edit `_buildCupertinoTabScaffold` method as follow:
+
 ```dart
 CupertinoTabScaffold _buildCupertinoTabScaffold() {
   return CupertinoTabScaffold(
@@ -423,7 +495,7 @@ CupertinoTabScaffold _buildCupertinoTabScaffold() {
 }
 ```
 
-## Summary.
+### Summary.
 
 What we have done so far:
 - Created another component named `Settings` with basic UI.
@@ -2023,3 +2095,4 @@ Woa, we finish the app and I hope you enjoy this article. Please leave some comm
 
 - [Flutter: Best Practices and Tips](https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5)
 - [AngularAngular Observable Data Services](https://coryrylan.com/blog/angular-observable-data-services)
+- [Building a Cupertino app with Flutter](https://codelabs.developers.google.com/codelabs/flutter-cupertino/#0)
