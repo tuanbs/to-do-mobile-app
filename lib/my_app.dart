@@ -41,9 +41,9 @@ class _MyAppState extends State<MyApp> {
       title: 'Flutter Demo',
       theme: ThemeData(
         brightness: _isDarkMode ? Brightness.dark : Brightness.light,
-        floatingActionButtonTheme: FloatingActionButtonThemeData(
-          // foregroundColor: Colors.yellowAccent,
-        ),
+        
+        /// ToDo: The following line (as a workaround) fixes the warning (when I toggle theme): `flutter: Warning: The support for configuring the foreground color of FloatingActionButtons using ThemeData.accentIconTheme has been deprecated. Please use ThemeData.floatingActionButtonTheme instead. See https://flutter.dev/go/remove-fab-accent-theme-dependency. This feature was deprecated after v1.13.2.`
+        floatingActionButtonTheme: FloatingActionButtonThemeData(foregroundColor: _isDarkMode ? Colors.black : Colors.white,),
       ),
       initialRoute: AppConstants.appTabBarPath,
       onGenerateRoute: AppRouting.generateAppRoute,
