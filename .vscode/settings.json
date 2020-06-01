@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
+        "autoincrement",
+        "cupertino",
         "deleted",
         "horiz",
         "is",
@@ -7,6 +9,9 @@
         "ltrb",
         "multiline",
         "pubspec",
+        "randomblob",
+        "roadmap",
+        "rxdart",
         "sqflite",
         "sqlite",
         "stateful",

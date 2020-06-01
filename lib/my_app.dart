@@ -28,9 +28,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _isDarkModeSettingObservableSubscriber = _settingRepoService.isDarkModeSettingObservable.listen((_switchBtnValue) {
+    _isDarkModeSettingObservableSubscriber = _settingRepoService.isDarkModeSettingObservable.listen((isDarkMode) {
       setState(() {
-        _isDarkMode = _switchBtnValue;
+        _isDarkMode = isDarkMode;
       });
     });
   }

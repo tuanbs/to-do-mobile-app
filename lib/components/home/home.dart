@@ -65,7 +65,7 @@ class _HomeState extends State<Home> {
             ToDo item = _toDos[index];
             return Dismissible(
               // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
-              key: Key(item?.guid.toString()),
+              key: UniqueKey(), // Or you can use Key(item?.guid.toString()),
               child: ListTile(
                 leading: IconButton(
                   icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
@@ -81,7 +81,7 @@ class _HomeState extends State<Home> {
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
                 subtitle: Text(
-                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.createdDate))}',
+                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.updatedDate))}',
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
@@ -94,7 +94,7 @@ class _HomeState extends State<Home> {
               onDismissed: (direction) async {
                 await _toDoRepoService.deletePost(item);
                 // Show a snackbar to indicate item deleted.
-                Scaffold.of(context).showSnackBar(SnackBar(content: Text('Item of Id ${item?.id} deleted')));
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text('Item index $index deleted')));
               },
               // Show a red background as the item is swiped away.
               background: Container(color: Colors.red,),
@@ -151,7 +151,7 @@ class _HomeState extends State<Home> {
       ToDo copiedUpdatingToDo = ToDo.fromJson(updatingToDo.toJson());
       debugPrint('copiedUpdatingToDo is: ${json.encode(copiedUpdatingToDo)}');
 
-      await _toDoRepoService.updatePost(copiedUpdatingToDo);
+      await _toDoRepoService.toggleIsDone(copiedUpdatingToDo);
       isOk = true;
     } catch (e) {
       debugPrint('_toggleCompleted failed');

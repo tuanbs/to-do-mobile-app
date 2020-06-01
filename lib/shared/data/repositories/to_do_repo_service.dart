@@ -63,6 +63,8 @@ class ToDoRepoService {
 
     try {
       List<dynamic> results;
+      paramObj.updatedDate = DateTime.now().toUtc().toString(); // Need to be the current time before saving to Sqlite db.
+
       await db?.transaction((txn) async {
         var batch = txn.batch();
         batch.insert(
@@ -115,6 +117,8 @@ class ToDoRepoService {
 
     try {
       List<dynamic> results;
+      paramObj.updatedDate = DateTime.now().toUtc().toString();
+
       await db?.transaction((txn) async {
         var batch = txn.batch();
         batch.update(
@@ -157,11 +161,18 @@ class ToDoRepoService {
         // debugPrint('deletePost results is: ${json.encode(results)}');
       });
       if (results.first > 0) {
-        var deletingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == paramObj.guid);
-        if (deletingItemIndex != -1) {
-          _appDbContextService.toDos.removeAt(deletingItemIndex);
+        var deletingItem = _appDbContextService.toDos.firstWhere((item) => item.guid == paramObj.guid, orElse: () => null);
+        if (_appDbContextService.toDos.contains(deletingItem)) {
+          _appDbContextService.toDos.remove(deletingItem);
           _toDosBehaviorSubject.add(_appDbContextService.toDos);
         }
+
+        /// Reference only: delete based on index.
+        // var deletingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == paramObj.guid);
+        // if (deletingItemIndex != -1) {
+        //   _appDbContextService.toDos.removeAt(deletingItemIndex);
+        //   _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        // }
         return Future.value();
       }
     } catch (e) {
@@ -169,5 +180,38 @@ class ToDoRepoService {
       debugPrint('ToDoRepoService deletePost failed. error is: $error');
     }
     return Future.error(error);    
+  }
+
+  Future toggleIsDone(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      var paramObjJson = paramObj.toJson();
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.update(
+          AppConstants.tableTodoName,
+          // We just need to update `IsDone` column.
+          {ToDo.isDoneColumn: paramObjJson[ToDo.isDoneColumn]},
+          where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+        );
+        results = await batch.commit();
+        // debugPrint('updatePost results is: ${json.encode(results)}');
+      });
+      if (results.first > 0) {
+        var updatingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == paramObj.guid);
+        if (updatingItemIndex != -1) {
+          _appDbContextService.toDos[updatingItemIndex] = ToDo.fromJson(paramObjJson);
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        return Future.value();
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService updatePost failed. error is: $error');
+    }
+    return Future.error(error);
   }
 }

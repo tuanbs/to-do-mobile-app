@@ -1,42 +1,76 @@
-# Code flow of `to-do` app.
+## Table of contents.
+
+1. [Table of contents.](#table-of-contents)
+1. [What is this.](#what-is-this)
+1. [Introduction.](#introduction)
+1. [Prerequisites.](#prerequisites)
+1. [Create the initial `Flutter` app.](#create-the-initial-flutter-app)
+1. [Folder structure.](#folder-structure)
+   1. [Explanations](#explanations)
+1. [Reorganize the initial app and navigate with named routes.](#reorganize-the-initial-app-and-navigate-with-named-routes)
+   1. [Create `Home` component.](#create-home-component)
+   1. [Create `MyApp` component.](#create-myapp-component)
+   1. [Modify `main.app` file.](#modify-mainapp-file)
+   1. [Navigate between components using named route.](#navigate-between-components-using-named-route)
+   1. [Code improvements](#code-improvements)
+   1. [Review.](#review)
+1. [Bottom Navigation Bar (Tab Bar)](#bottom-navigation-bar-tab-bar)
+   1. [Explanations.](#explanations-1)
+   1. [Code improvements.](#code-improvements-1)
+   1. [Review.](#review-1)
+1. [Create pre-populated database and use `Dependency Injection (DI)` & `Repository` patterns.](#create-pre-populated-database-and-use-dependency-injection-di--repository-patterns)
+   1. [Init Sqlite database.](#init-sqlite-database)
+   1. [Dependency Injection (DI) and Repository patterns.](#dependency-injection-di-and-repository-patterns)
+   1. [Review.](#review-2)
+1. [Implement `Observable` pattern using `RxDart`.](#implement-observable-pattern-using-rxdart)
+   1. [Show list of to-do items in console log.](#show-list-of-to-do-items-in-console-log)
+   1. [Show list on `Home` page.](#show-list-on-home-page)
+   1. [Code improvements: Use `ListView.builder` for a long list.](#code-improvements-use-listviewbuilder-for-a-long-list)
+   1. [Review.](#review-3)
+1. [Implement `Create` operation.](#implement-create-operation)
+   1. [Save new item to database.](#save-new-item-to-database)
+   1. [Code improvements.](#code-improvements-2)
+   1. [Review.](#review-4)
+1. [Implement `Read`, `Update` and `Delete` operations.](#implement-read-update-and-delete-operations)
+   1. [Implement `Read` and `Update` operations.](#implement-read-and-update-operations)
+   1. [Implement `Delete` operation.](#implement-delete-operation)
+   1. [Review.](#review-5)
+1. [Use global variables and switching theme between light/ dark mode.](#use-global-variables-and-switching-theme-between-light-dark-mode)
+   1. [Review.](#review-6)
+1. [Conclusion.](#conclusion)
+1. [References:](#references)
+
+## What is this.
 
 This is the step-by-step instructions on how to create this app from scratch. The final app will look like this:
 
 ![alt text](./docs/images/screenshots/iOS-demo.gif "Title")
 ![alt text](./docs/images/screenshots/Android-demo.gif "Title")
 
-## Table of contents.
-
-1. [Introduction](#Introduction)
-1. [Prerequisites.](#Prerequisites)
-1. [Creating and installing dependencies.](#Creating-and-installing-dependencies.)
-
 ## Introduction.
 
-Welcome to my first tutorial on how to write a cross-platform mobile app using `Flutter`. -> What is `Flutter`? -> Please check [here](https://flutter.dev/docs) to learn about it. -> In my words, it's a framework used to create cross-platform app (iOS, Android and Website). It's similar to `React Native` or `Ionic` frameworks if you've heard of them before.
+Welcome to my first article on how to write a cross-platform mobile app using `Flutter`. -> What is `Flutter`? -> Please check [here](https://flutter.dev/docs) to learn about it. -> In my words, it's a framework used to create cross-platform app (iOS, Android and Website). It's similar to `React Native` or `Ionic` frameworks if you've heard of them before.
 
-You would ask me the question why I choose `Flutter` instead of `React Native` or `Ionic`. Well, I used those 2 frameworks before and I don't like it. I'm not going to tell you the reasons why I don't like those 2 frameworks, otherwise the fans of those 2 frameworks would through their stones at me. I, however, will tell you the main reason why I choose it: that's because I come from `.Net` and `Angular` backgrounds, and I see I can reuse my knowledge and skills of `.Net` and `Angular` into `Flutter`. 
+You would ask me the question why I choose `Flutter` instead of `React Native` or `Ionic`. Well, I used those 2 frameworks before and I don't like it. The main reason I choose it because I come from `.Net` and `Angular` backgrounds, and I see I can reuse my knowledge and skills of `.Net` and `Angular` into `Flutter`. For example, one of my hobby apps uses `.Net Core` for its back-end API, `Angular` for the website and `Flutter` for the mobile app. And I see I can reuse about 80% of the concepts from `.Net` and `Angular` into `Flutter` app. So I would like to share it in this article.
 
-For example, one of my hobby apps uses `.Net Core` for its back-end API, `Angular` for the website and `Flutter` for the mobile app. And I see I can reuse about 80% of the concepts from `.Net` and `Angular` into `Flutter` app. So I would like to share it in this tutorial.
-
-What you'll learn in this tutorial:
+What you'll learn in this post:
 - How to build a `To-do` app that runs on `iOS` and `Android`.
 - Reuse some concepts from `.Net` and `Angular` into `Flutter` app.
 
-> **NOTE:** In this tutorial, I'm going to create the app that will run based on the local database named `Sqlite`, so that it doesn't need to be connected to internet. The roadmap (if I have time) for this project is to make it similar to the `Notes` app on `iOS` devices, so that when it's connected to internet, it'll sync its local data with the server, and users can see their notes from different platforms (iOS, Android and website).
+> **NOTE:** In this article, I'm going to create the app that will run based on the local database named `Sqlite`, so that it doesn't need to be connected to internet. The roadmap (if I have time) for this project is to make it similar to the Apple `Notes` app on `iOS` devices, so that when it's connected to internet, it'll sync its local data with the server, and users can see their notes from different platforms (iOS, Android and website).
 
 ## Prerequisites.
 
-This tutorial is for everyone who has experience with at least one of the programming languages such as `C#, Java, Javascript etc...`. However it would be easier for you to follow along with the code if you posses the followings:
+This tutorial is for everyone who has experience with at least one of the programming languages such as `C#, Java, Javascript etc...`. However it would be easier for you to follow along with the code if you have the followings:
 
 - Basic understanding of `Flutter` and `Dart`.
 - Familiar with some front-end frameworks like `Angular` or `React`.
 
-To code along with the code-flow in this tutorial, please prepare the followings:
+To code along with the code-flow in this post, please prepare the followings:
 - Install the latest version of `Flutter` properly on your system. If you don't know that, check [here](https://flutter.dev/docs) for more information.
-- Install Visual Studio Code (VS Code). You can use your preferred editor such as `Atom` or `Android Studio`.
+- Install Visual Studio Code (VSCode). You can use your preferred editor such as `Atom` or `Android Studio`.
 
-> **NOTE:** At the time of writing this tutorial, I use `Flutter` version `1.17.0` on macOS Catalina.
+> **NOTE:** At the time of writing this article, I use `Flutter` version `1.17.0` on macOS Catalina.
 
 Enough talking, let's create the app.
 
@@ -47,11 +81,12 @@ To create the initial app, run cmd:
 flutter create my_notes_flutter_mobile
 ```
 
-Open the app in `VS Code` and press `Ctrl + F5`, then make sure you see the initial screen of flutter app without any error before moving to next step.
+Open the app in `VSCode` and press `Ctrl + F5`, then make sure you see the initial screen of flutter app without any error before moving to next step.
 
-## Folder structure:
+## Folder structure.
 
 I make this app's folder structure similar to the `Angular` app version I created before:
+
 ```
 my_notes_flutter_mobile
   assets/
@@ -66,10 +101,10 @@ my_notes_flutter_mobile
       ...
   lib/
     components/
-      add_to_do/
-        add_to_do.dart
       app_tab_bar/
         app_tab_bar.dart
+      add_to_do/
+        add_to_do.dart      
       edit_to_do/
         edit_to_do.dart
       home/
@@ -87,6 +122,7 @@ my_notes_flutter_mobile
         to_do_model.dart
       parameters/
         to_do_parameters.dart
+        to_do_resource_parameters.dart
         ...
       services/
         app_db_context_service.dart
@@ -106,24 +142,23 @@ my_notes_flutter_mobile
 
 ### Explanations
 
-In `Angular` or `React` app, we use the concept of `component` to implement the separation of concerns in software development. We can use this `components` approach in `Flutter` app.
+In `Angular` or `React` app, we use the concept of `component` to implement the separation of concerns in software development. We can use this `components` approach in `Flutter` app as well.
 
-> **NOTE:** I, however, encourage people to use whatever the folder structure they prefer as long as it makes sense to them. And try to use the similar structure into different frameworks regardless of what programming language those frameworks are using. This approach enables you as a software developer to maintain the apps easier without worrying learning different concepts for different structures.
+> **NOTE:** I, however, encourage people to use whatever the folder structure they prefer as long as it makes sense to them. And try to use the similar structure into different frameworks regardless of what programming language those frameworks are using. This approach enables you as a software developer to maintain the apps easier without worrying learning different concepts from different frameworks (or programming languages).
 
-## Reorganize the initial app.
+## Reorganize the initial app and navigate with named routes.
 
-In this step, we're going to reorganize the initial app into using our folder structure mentioned above.
+In this step, we're going to reorganize the initial app using our folder structure mentioned above.
 
 ### Create `Home` component.
 
 Open `main.dart` file and refactor `MyHonePage` into `Home`.
 
-> **Tips:** To refactor class's name (or variables and methods) in `VS Code`, right-click on the class's name and select `Rename Symbol`. Then input the new name for it.
+> **Tips:** To refactor class's name (or variables and methods) in `VSCode`, right-click on the class's name and select `Rename Symbol`. Then input the new name for it.
 
 Move this `Home` component into `lib/components/home.dart` file. By default, `Flutter` generates a new stateful component with the `title` argument inside its constructor. However, as we're not going to set component's title via its constructor, I prefer the title sticks inside its own component. So let's remove the `title` argument from its constructor like so:
 
-#### `lib/components/home.dart`
-
+> `lib/components/home.dart`
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -166,10 +201,9 @@ Open `main.dart` and move `MyApp` class into `my_app.dart` file. Then import the
 
 ### Modify `main.app` file.
 
-Open `main.app` file and mark its `main()` function as `async` because we need to have some configurations before running the app:
+Open `main.app` file and mark its `main()` function as `async` because we will need to have some configurations set up later on before running the app:
 
-#### `lib/main.app`
-
+> `lib/main.app`
 ```dart
 void main() async {
   var myApp = MyApp();
@@ -179,12 +213,11 @@ void main() async {
 
 Now we're able to run the app using our own new folder structure. Make sure there's no error before moving to next step.
 
-## Navigate between components using named route.
+### Navigate between components using named route.
 
 Similar to `Angular` and `React`, in `Flutter` we can show the component based on its route name. Here I'm using `onGenerateRoute` to define app's routes. Let's modify the `MyApp` component as following:
 
-#### `lib/my_app.dart`
-
+> `lib/my_app.dart`
 ```dart
 class MyApp extends StatelessWidget {
   @override
@@ -214,8 +247,7 @@ class MyApp extends StatelessWidget {
 
 As the app gets scaled, we would have lots of routes and business logic in each route. So it's a best practice to separate the routes section into another class named `AppRouting`. This approach can also be used in `Angular` and `React`. Let's open `app_routing.dart` file and define the following routes:
 
-#### `lib/app_routing.dart`
-
+> `lib/app_routing.dart`
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:to_do_mobile_app/components/home/home.dart';
@@ -237,8 +269,7 @@ class AppRouting {
 
 Then use this setting inside `MyApp` component as follow:
 
-#### `lib/my_app.dart`
-
+> `lib/my_app.dart`
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -261,10 +292,9 @@ class MyApp extends StatelessWidget {
 
 ### Code improvements
 
-As you can see we use the string `/` to name the `Home` component's route in `MyApp` class. And then inside `AppRouting` class, we repeat the `/` again to show the `Home` component. So it's better to put those constant values into one place, so that when we update it, it would reflect the change to all of its references. This approach also reduces the duplicated code amd makes the app more maintainable. Let's create a class named `AppConstants`:
+As you can see we use the string `/` to name the `Home` component's route in `MyApp` class. And then inside `AppRouting` class, we repeat the `/` again to show the `Home` component. It's better to put those constant values into one place, so that when we update it, it would reflect the change to all of its references. This approach also reduces the duplicated code amd makes the app more maintainable. Let's create a class named `AppConstants`:
 
-#### `/lib/app_constants.dart`
-
+> `/lib/app_constants.dart`
 ```dart
 import 'package:flutter/widgets.dart';
 
@@ -275,16 +305,14 @@ class AppConstants {
 
 Then update the `MyApp` and `AppRouting` as follow:
 
-#### `/lib/my_app.dart`
-
+> `/lib/my_app.dart`
 ```dart
-...
+// ...
 initialRoute: AppConstants.homePath,
-...
+// ...
 ```
 
-#### `/lib/app_routing.dart`
-
+> `/lib/app_routing.dart`
 ```dart
 switch (settings.name) {
     case AppConstants.homePath:
@@ -297,10 +325,10 @@ switch (settings.name) {
 }
 ```
 
-### Summary:
+### Review.
 
 What we have done so far:
-- Structured the app's files and folders that is similar to `Angular` and `React`.
+- Structured the app's files and folders that is similar to `Angular` or `React`.
 - Navigating the app using named routes.
 - Put duplicated code and constants values inside `AppConstants` class.
 
@@ -312,8 +340,7 @@ You would ask the question why not `Android`, but `iOS style`? Well, `Android` u
 
 Let's create 2 components named `Settings` and `AppTabBar`. The `AppTabBar` has 2 tabs `Home` and `Settings` which will show `Home` and `Settings` component respectively when it's tapped:
 
-#### `lib/settings/settings.dart`
-
+> `lib/settings/settings.dart`
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -350,8 +377,7 @@ class _SettingsState extends State<Settings> {
 }
 ```
 
-#### `lib/app_tab_bar/app_tab_bar.dart`
-
+> `lib/app_tab_bar/app_tab_bar.dart`
 ```dart
 import 'package:flutter/cupertino.dart';
 import 'package:to_do_mobile_app/components/home/home.dart';
@@ -412,7 +438,7 @@ class _AppTabBarState extends State<AppTabBar> {
 }
 ```
 
-### Explanations:
+### Explanations.
 
 - `tabBar`: `CupertinoTabBar` requires at least two items, or you will see errors at run-time. Those tab items are shown at the bottom of the app.
 - `tabBuilder`: is responsible for making sure the specified tab is built. In this case, it calls a class constructor to set up each respective tab, wrapping all two in `CupertinoTabView` and `CupertinoPageScaffold`.
@@ -421,17 +447,16 @@ Now, let's edit the following classes:
 - In `AppConstant`, refactor the `homePath` into `appTabBarPath`:
 - In `AppRouting`, replace the `Home` component with the `AppTabBar` component.
 
-#### `lib/app_constants.dart`
+> `lib/app_constants.dart`
 
 ```dart
 class AppConstants {
-  ...
+  // ...
   static const String appTabBarPath = '/';
 }
 ```
 
-#### `lib/app_routing.dart`
-
+> `lib/app_routing.dart`
 ```dart
 class AppRouting {
     static Route<dynamic> generateAppRoute(RouteSettings settings) {
@@ -454,12 +479,11 @@ Run the app and you should see the following screen:
 
 Try to tap the `Settings` tab to see the `Settings` page.
 
-### Code improvements:
+### Code improvements.
 
 Let's improve the code a little bit. Instead of using `index` number of tab item, we can make it human-readable by using `enum`. Add this line at the beginning of your class:
 
-#### `lib/app_tab_bar/app_tab_bar.dart`
-
+> `lib/app_tab_bar/app_tab_bar.dart`
 ```dart
 enum _TabItemLabelEnum { home, settings }
 ```
@@ -495,31 +519,74 @@ CupertinoTabScaffold _buildCupertinoTabScaffold() {
 }
 ```
 
-### Summary.
+### Review.
 
 What we have done so far:
 - Created another component named `Settings` with basic UI.
 - Implemented `Bottom Navigation Bar` (tab bar) with iOS style and put it into a component named `AppTabBar`.
 - Using `enum` instead of `index` to make the code more human-readable.
 
+## Create pre-populated database and use `Dependency Injection (DI)` & `Repository` patterns.
 
--------------------------------------------------- Draft.
+In this section, we're going to use `Sqlite` as local database so that the app can store its data locally. I already created the sql script that defines all tables for the app's database. This sql script is generated using `.Net EF Core` which will not be covered in this tutorial as this is the `Flutter` topic. Later, if have time, I'll write another tutorial on `.Net Core` and `EF Core` to create the back-end API for the app. Below is the sql script for Sqlite:
 
-## Create pre-populated database.
+```sql
+CREATE TABLE "AppUsers" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK_AppUsers" PRIMARY KEY AUTOINCREMENT,
+    "Guid" TEXT NOT NULL,
+    "CreatedDate" TEXT NOT NULL,
+    "UpdatedDate" TEXT NOT NULL,
+    "IsDeleted" INTEGER NULL DEFAULT 0,
+    "AccessFailedCount" INTEGER NULL,
+    "Email" TEXT NULL,
+    "Gender" TEXT NULL,
+    "PhoneNumber" TEXT NULL,
+    "UserName" TEXT NULL,
+    "DateOfBirth" TEXT NULL,
+    "FirstName" TEXT NULL,
+    "MiddleName" TEXT NULL,
+    "LastName" TEXT NULL
+);
 
-Use .Net Core to define and generate db script for Sqlite.
+CREATE TABLE "ToDos" (
+    "Id" INTEGER NOT NULL CONSTRAINT "PK_ToDos" PRIMARY KEY AUTOINCREMENT,
+    "Guid" TEXT NOT NULL,
+    "CreatedDate" TEXT NOT NULL,
+    "UpdatedDate" TEXT NOT NULL,
+    "IsDeleted" INTEGER NULL DEFAULT 0,
+    "Description" TEXT NOT NULL,
+    "IsDone" INTEGER NULL DEFAULT 0,
+    "AppUserId" INTEGER NULL,
+    CONSTRAINT "FK_ToDos_AppUsers_AppUserId" FOREIGN KEY ("AppUserId") REFERENCES "AppUsers" ("Id") ON DELETE RESTRICT
+);
 
-Download `DB Browser for Sqlite`. -> Use this app to create new db named `to_do_mobile.db` by executing the script. -> Then put this db in `assets/database/to_do_mobile.db`.
+CREATE UNIQUE INDEX "IX_AppUsers_Email" ON "AppUsers" ("Email");
 
-Specify the asset(s) in your `pubspec.yaml` in the flutter section:
-```yaml
-flutter:
-  assets:
-    - assets/database/to_do_mobile.db
+CREATE UNIQUE INDEX "IX_AppUsers_Guid" ON "AppUsers" ("Guid");
+
+CREATE UNIQUE INDEX "IX_AppUsers_UserName" ON "AppUsers" ("UserName");
+
+CREATE INDEX "IX_ToDos_AppUserId" ON "ToDos" ("AppUserId");
+
+CREATE UNIQUE INDEX "IX_ToDos_Guid" ON "ToDos" ("Guid");
+
+---------- Insert some sample data.
+Insert Or Replace Into ToDos(Id, [Guid], CreatedDate, UpdatedDate, [Description], IsDone) Values (1, lower(hex(randomblob(16))), datetime('now'), datetime('now'), "Learn Swift", 0);
+Insert Or Replace Into ToDos(Id, [Guid], CreatedDate, UpdatedDate, [Description], IsDone) Values (2, lower(hex(randomblob(16))), datetime('now'), datetime('now'), "Learn Flutter", 1);
+Insert Or Replace Into ToDos(Id, [Guid], CreatedDate, UpdatedDate, [Description], IsDone) Values (3, lower(hex(randomblob(16))), datetime('now'), datetime('now'), "Learn .Net Core", 0);
 ```
 
-In order to use `Sqlite` in this app, we need to add the following packages in `pubspec.yaml` file:
+> **NOTE:** In this tutorial, we're not going to use the `AppUsers` table. I leave it here for the next tutorial whose topic would be about authentication and sync the local database with the server database.
+
+Next, you need to download [DB Browser for Sqlite](https://github.com/sqlitebrowser/sqlitebrowser) app to create database by executing the sql script. Then name your local db as `to_do_mobile.db` and put it in `assets/database/` folder. If you have issue generating database, you can use the one I attached in the source code on Github.
+
+### Init Sqlite database.
+
+After having the database, you need to tell `Flutter` that you want to use this database file inside the app as well as manipulating it to store the data. To achieve this, you need to specify your assets and install necessary packages to work with `sqlite` db in the `pubspec.yaml` file. Edit `pubspec.yaml` as below:
+
+> `pubspec.yaml`
 ```yaml
+# ...
 dependencies:
   flutter:
     sdk: flutter
@@ -528,19 +595,29 @@ dependencies:
   path_provider: 1.6.7
   path: 1.6.4
   intl: 0.16.1
+# ...
+flutter:
+  # ...
+  assets:
+    # ...
+    - assets/database/to_do_mobile.db
+# ...
 ```
 
-Add the database's name in `AppConstants` class:
+As the names of database and its tables are constants, we should add them in `AppConstants` class:
+
+> `/lib/app_constants.dart`
 ```dart
-#### /lib/app_constants.dart
+// ...
 static const String databaseName = 'to_do_mobile.db';
 static const String tableTodoName = 'ToDos';
+// ...
 ```
 
-Create the service named `AppDbContextService` in the `lib/shared/services` folder:
-```dart
-#### `lib/shared/services/app_db_context_service.dart`
+Next, similar to `.Net Core` concept, I'm going to create the service class named `AppDbContextService` in the `lib/shared/services` folder to manipulate the db:
 
+> `lib/shared/services/app_db_context_service.dart`
+```dart
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
@@ -559,6 +636,19 @@ class AppDbContextService {
 
   //#region Helpers.
   //#end-region.
+
+  Future<void> dropDb() async {
+    try {
+      _databasesPath = await getDatabasesPath();
+      _databasesPath = join(_databasesPath, AppConstants.databaseName);
+      if (await databaseExists(_databasesPath)) {
+        await deleteDatabase(_databasesPath);
+        debugPrint('Drop existing DB successfully');
+      }
+    } catch (e) {
+      debugPrint('Exception in AppDbContextService.dropDb(). e is: $e');
+    }
+  }
 
   Future<void> initDb() async {
     _databasesPath = await getDatabasesPath();
@@ -594,19 +684,35 @@ class AppDbContextService {
 }
 ```
 
-Next step is to implement the Dependency Injection (DI) design pattern to inject the `AppDbContext` service.
+> **NOTE:** I also include the `dropDb` method in the above class, just in case you want to use it to refresh the database (call this method at `AppInjections` class).
 
-## Dependency Injection.
+Next step is to implement the Dependency Injection (DI) pattern, which is used in `.Net Core` and `Angular` as well, to inject the `AppDbContext` service.
 
-In order to use DI in this app, we need to add the package `get_it` into `pubspec.yaml`:
+### Dependency Injection (DI) and Repository patterns.
+
+In software development, DI is a pattern in which an object receives other objects that it depends on. These other objects are called dependencies and in most cases they are instantiated once only. We call those dependencies as `services`. This pattern is used in many frameworks such as `Angular` and `.Net Core`.
+
+In `.Net Core`, we also have another pattern called `Repositories` which are the classes or components that encapsulate the business logic required to access data sources. And we use DI to inject those repositories for the receiving objects. So we can call those repositories as `services` as well.
+
+Alternatively, we can say DI is just the way we inject the objects when we need them, and those objects are created only once and shared for the entire app. And the so-called `Repositories` is just the way we separate the common codes (business logic codes) between controllers into objects which then can be shared between controllers.
+
+I use those patterns quite a lot, so I'd like to implement them in `Flutter` app. I put the `Repositories` classes inside `lib/shared/data/repositories/` folder, and the `services` classes inside `lib/shared/services/` folder.
+
+As `Flutter` doesn't support DI out of the box, we need to add the package `get_it` to use DI:
+
+> `pubspec.yaml`
 ```yaml
-get_it: 4.0.2
+# ...
+  get_it: 4.0.2
+# ...
 ```
 
-Create `AppInjections` class to register the services we want to inject in this app:
-```dart
-#### `/lib/app_injections.dart`
+> **NOTE:** There's another package named `provider` which is also used to handle DI (not purely DI). But after playing around with it, I prefer `get_it` to `provider` because I see the syntax of `get_it` makes it easier to convert `Angular` app into `Flutter`.
 
+Then, we need to create `AppInjections` class to register the services we want to inject in this app:
+
+> `/lib/app_injections.dart`
+```dart
 import 'package:get_it/get_it.dart';
 
 import 'package:to_do_mobile_app/shared/services/app_db_context_service.dart';
@@ -623,14 +729,15 @@ class AppInjections {
 
     // Wait for db initialization.
     await appDbContextService.initDb();
+    // await appDbContextService.dropDb();
   }
 }
 ```
 
 Then call the method `setupDI` in `main.dart` to setup DI:
-```dart
-#### `lib/main.dart`
 
+> `lib/main.dart`
+```dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Ensure that the Flutter app initializes properly before initializing other configurations.
   
@@ -641,15 +748,18 @@ void main() async {
 }
 ```
 
+> **NOTE:** `Dependency Injection` is a very common pattern that is used in many popular frameworks such as `Angular` and `.Net Core`. That's why I suggest you should use it in `Flutter` app.
+
 Now when you run your app (on iOS), you should see the log console like so:
+
 ```bash
 flutter: Database not exist. Creating new copy from assets.
 flutter: initDb successfully. _databasesPath is: <path_to_database>/Documents/to_do_mobile.db
 ```
 
-You can use `DB Browser` to open the db in `<path_to_database>/Documents/to_do_mobile.db` and check to see if it's the same as the pre-populated DB in the `assets/database/to_do_mobile.db`.
+When you run the app, each platform (`iOS` or `Android`) will have its own way to keep this db in a particular folder. You can use `DB Browser` app to open the db (`iOS` simulator in my case) at `<path_to_database>/Documents/to_do_mobile.db` and check to see if it's the same as the pre-populated DB in the `assets/database/to_do_mobile.db`.
 
-## Summary.
+### Review.
 
 What we have done so far:
 - Created the pre-populated database named `to_do_mobile.db`.
@@ -657,19 +767,45 @@ What we have done so far:
 - Created `AppDbContextService` to init the database.
 - Implemented Dependency Injections (DI) design pattern to inject the database service into the app.
 
-## Show list of to-do items.
+## Implement `Observable` pattern using `RxDart`.
 
-In this part, we're going to use `repository` pattern to do the CRUD operations and `rxdart` package to implement `reactive programming` to handle `single source of truth`.
+In this section, I'm going to use `Observable` pattern which will be used extensively in the rest of this article. The main reason I use this pattern is because it's a cross-platform technique. Once we're familiar with it, we can reuse it in other programming languages such as `Javascript` (using `RxJS`), `Swift` (using `RxSwift`) or `Kotlin` (using `RxKotlin`). I like this pattern which is also used in my `Angular` apps and would like to use it in this `Flutter` app, so that I can bring the logic from `Angular` into `Flutter`. I won't go in depth into `Observable` but will just cover some of the high level concepts.
 
-Add the `rxdart` package into `pubspec.yaml`:
+According to [wikipedia](https://en.wikipedia.org/wiki/Observer_pattern):
+> The `observer` pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods.
+
+This pattern follows the idea of unidirectional data flow which may seem familiar if you have worked with `Flux/ Redux` in `React`. It ensures that the data is coming from one place (single source of truth) in the application and that every component receives the latest version of that data through the data streams.
+
+Alternatively, in my words, I would say `Observable` pattern is when all components listen to a particular data source and this data source must come from one place. Once this data source is changed, this change will be reflected to all components.
+
+> **NOTE:** The implementation of using `Observable` pattern in this article may seem like a lot of work for such a simple todo app, but when we scale this up to a very large app we'll see `Observable` can really help manage the data and application state.
+
+Enough talking, let's understand it by implementing it in this app.
+
+### Show list of to-do items in console log.
+
+We're going to implement `repository` pattern which is mentioned in previous section to handle the CRUD operations, and install `rxdart` package to implement `Observable` pattern.
+
+Add the `rxdart` package:
+
+> `pubspec.yaml`
+
 ```yaml
 rxdart: 0.24.0
 ```
 
-Create a `ToDo` model to capture the to-do item:
-```dart
-#### `lib/shared/models/to_do_model.dart`
+Before showing the list of item on the UI, I'd like to see it in the console log first. We need to make the following changes:
+- Create a `ToDo` model class to capture the to-do item.
+- Create `ToDoResourceParameters` class which will be used to pass the `searchQuery` value when implementing the search feature later.
+  - **NOTE:** I won't cover the search feature in this article due to the time limit I have. But you can check its implementation in the source code when I update it.
+- Edit `AppDbContext` to add the data source of `toDos`.
+- Create `ToDoRepoService` in `lib/shared/data/repositories` and create an `Observable` stream of `toDos` to subscribe to.
+- Register `ToDoRepoService` in `AppInjections` class as part of `DI`.
+- Edit `Home` component to subscribe to the `toDos` data source stream then call `setState` to update the UI when data is changed. -> And show to-do list on console.
 
+> `lib/shared/models/to_do_model.dart`
+
+```dart
 class ToDo {
   static final String idColumn = 'Id';
   static final String createdDateColumn = 'CreatedDate';
@@ -718,16 +854,15 @@ class ToDo {
     data[guidColumn] = guid;
     data[isDeletedColumn] = isDeleted == true ? 1 : 0;
     data[isDoneColumn] = isDone == true ? 1 : 0;
-    data[updatedDateColumn] = DateTime.now().toUtc().toString(); // Need to be the current time before saving to Sqlite db.
+    data[updatedDateColumn] = updatedDate;
     return data;
   }
 }
 ```
 
-Create `ToDoResourceParameters`:
-```dart
-#### `/lib/shared/parameters/to_do_resource_parameters.dart`
+> `/lib/shared/parameters/to_do_resource_parameters.dart`
 
+```dart
 class ToDoResourceParameters {
   final String searchQuery;
 
@@ -741,19 +876,28 @@ class ToDoResourceParameters {
 }
 ```
 
-Edit `AppDbContext`, add the following codes:
-```dart
-/* DataStore stuffs for ToDos. */
-List<ToDo> _toDos;
+> `lib/shared/services/app_db_context_service.dart`
 
-List<ToDo> get toDos { return _toDos; }
-set toDos(List<ToDo> value) { _toDos = value ?? null; }
+```dart
+class AppDbContextService {
+  // ...
+  /* DataStore stuffs for ToDos. */
+  List<ToDo> _toDos;
+
+  List<ToDo> get toDos { return _toDos; }
+  set toDos(List<ToDo> value) { _toDos = value ?? null; }
+
+  AppDbContextService() {
+    // RxDart stuffs.
+    toDos = [];
+  }
+  // ...
+}
 ```
 
-Create `ToDoRepoService` in `lib/shared/data/repositories`:
-```dart
-#### `/lib/shared/services/repositories/to_do_repo_service.dart`
+> `/lib/shared/services/repositories/to_do_repo_service.dart`
 
+```dart
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart' as rxdart;
 import 'package:to_do_mobile_app/app_constants.dart';
@@ -798,10 +942,9 @@ class ToDoRepoService {
 }
 ```
 
-Register `ToDoRepoService` in `AppInjections` class:
-```dart
-#### `/lib/app_injections.dart`
+> `/lib/app_injections.dart`
 
+```dart
 class AppInjections {
   static Future<void> setupDI() async {
     // Register services.
@@ -812,10 +955,9 @@ class AppInjections {
 }
 ```
 
-Edit `Home` component to get the to-do list:
-```dart
-#### `/lib/components/home/home.dart`
+> `/lib/components/home/home.dart`
 
+```dart
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/cupertino.dart';
@@ -842,8 +984,6 @@ class _HomeState extends State<Home> {
   _HomeState() {
     /* DI Services. */
     _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
-
-    _toDos = [];
   }
 
   //#region Lifecycle.
@@ -891,31 +1031,23 @@ flutter: initDb successfully. _databasesPath is: <...>/Documents/to_do_mobile.db
 flutter: [{"Id":1,"CreatedDate":null,"Description":"Learn Swift","Guid":"0a3b06dca81fcb47391996ed1f41e69a","IsDeleted":0,"IsDone":0,"UpdatedDate":null},{"Id":2,"CreatedDate":null,"Description":"Learn Flutter","Guid":"edd579c6d28b20951e62fc0316b41520","IsDeleted":0,"IsDone":0,"UpdatedDate":null},{"Id":3,"CreatedDate":null,"Description":"Learn .Net Core","Guid":"1616de86895b0075a9b00cc5f6fef06c","IsDeleted":0,"IsDone":0,"UpdatedDate":null}]
 ```
 
-## Summary.
+The next step is to show these 3 rows on the UI.
 
-What we have done so far:
-- Added `rxdart` package to implement reactive programming using Observables.
-- Created `ToDoRepoService` and inject it into the app.
-- Logging the result in the log console by listening to the result changes.
-- Created the `ToDo` model to map the result from Sqlite db.
+### Show list on `Home` page.
 
-Next step is to show these 3 rows on the UI.
+Before implementing `CRUD` operations, let's show the list of items on the `Home` page UI. Edi the `Home` component as follow:
 
-## Show list on `Home` page.
+> `/lib/components/home/home.dart`
 
-Edit the `build` method of `Home` component:
 ```dart
-#### `/lib/components/home/home.dart`
-
 import 'package:intl/intl.dart';
-
-...
+// ...
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
+  // ...
 
   @override
   Widget build(BuildContext context) {
@@ -928,7 +1060,7 @@ class _HomeState extends State<Home> {
           children: _toDos?.map((item) {
             return Dismissible(
               // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
-              key: Key(item?.guid.toString()),
+              key: UniqueKey(), // Or you can use Key(item?.guid.toString()),
               child: ListTile(
                 leading: IconButton(
                   icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
@@ -941,7 +1073,7 @@ class _HomeState extends State<Home> {
                   style: Theme.of(context).textTheme.subtitle1,
                 ),
                 subtitle: Text(
-                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.createdDate))}',
+                  (item.updatedDate ?? '') == '' ? '' : '${DateFormat('EEE, y/M/d').format(DateTime.parse(item.updatedDate))}',
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
@@ -954,8 +1086,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
-  ...
+  // ...
 }
 ```
 
@@ -963,25 +1094,24 @@ Then run the app and you should see the following UI:
 
 ![alt text](./docs/images/screenshots/home-list.png "Title")
 
-**Code improvement: Use ListView.builder for a long list**
+### Code improvements: Use `ListView.builder` for a long list.
 
-When working with infinite lists or very long lists, it’s usually advisable to use a `ListView.builder` in order to improve performance. -> Why? -> Because the `ListView` constructor builds the whole list at once. But the `ListView.builder` creates a lazy list that when the users scroll down the list, Flutter builds widgets on-demand. Let's modify the `build` method like so:
+When working with infinite lists or very long lists, it’s usually advisable to use a `ListView.builder` in order to improve the app's performance. -> Why? -> Because the `ListView` constructor builds the whole list at once. But the `ListView.builder` creates a lazy list that when the users scroll down the list, Flutter builds widgets on-demand. Let's modify the `build` method like so:
+
+> `/lib/components/home/home.dart`
+
 ```dart
-#### `/lib/components/home/home.dart`
-
-...
+// ...
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
+  // ...
 
   _HomeState() {
     /* DI Services. */
     _toDoRepoService = _toDoRepoService ?? getIt<ToDoRepoService>();
-
-    // _toDos = []; // Remove this line when using `ListView.builder`.
   }
 
   @override
@@ -1003,33 +1133,49 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
-  ...
+  // ...
 }
 ```
 
-## Create a new to-do item.
+### Review.
 
-Edit the `build` method of `Home` component to add the `Add` button at the bottom:
+What we have done so far:
+- Added `rxdart` package to implement `Observable` pattern.
+- Created the `ToDo` model to map the result from Sqlite db.
+- Created `ToDoRepoService` and inject it into the app.
+- Logging the result in the log console by listening to the data changes.
+- Showed the list of items on `Home` page UI.
+
+## Implement `Create` operation.
+
+In previous sections, I showed you how to implement routing between tabs which I call it as routing outside the `AppTabBar`. In this section, we're going to implementing routing inside `AppTabBar`. It means each tab will have its own navigation. For example, at `Home` page, there's a an `Add` button which navigates to the another page to add new item.
+
+Let's implement the `Create` operation by making the following changes:
+- Edit the `build` method of `Home` component to show the `Add` button at the bottom. Also, add method `_navigateTo` which is called in `onPressed` event when the `Add` button pressed.
+- Create a new component named `AddToDo`.
+- Add new method named `generateAppTabBarRoute` inside `AppRouting` class to implement routing inside the `AppTabBar`.
+- Then in `AppTabBar`, edit method `_buildCupertinoTabScaffold` to generate routes inside the `AppTabBar` for all tabs.
+- In `ToDoRepoService`, add methods `addAsyncGet` and `addAsyncPost` to save item.
+- Edit `AddToDo` and inject `ToDoRepoService` to save item on pressing `Done` button.
+
+> `/lib/components/home/home.dart`
+
 ```dart
-#### `/lib/components/home/home.dart`
-
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
-
+  // ...
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        ...
+        // ...
       ),
       body: Center(
         child: ListView.builder(
-          ...
+          // ...
         ),
       ),
       floatingActionButton: Padding(
@@ -1048,10 +1194,11 @@ Then run the app and you should see the following UI:
 
 ![alt text](./docs/images/screenshots/home-list-add-button.png "Title")
 
-Next, let's create a new component named `AddToDo` with basic UI in `lib/components/add_to_do/add_to_do.dart` so that when users click the `Add` button, it'll get to this page. Also, we need to add a new constant value path for this component in `AppConstants`:
-```dart
-#### `lib/components/add_to_do/add_to_do.dart`
+Next, let's create a new component named `AddToDo` with basic UI, so that when users click the `Add` button, it'll get to this page. Also, we need to add a new constant value path for this component in `AppConstants`:
 
+> `lib/components/add_to_do/add_to_do.dart`
+
+```dart
 import 'package:flutter/material.dart';
 
 import 'package:flutter/material.dart';
@@ -1113,41 +1260,21 @@ class _AddToDoState extends State<AddToDo> {
     );
   }
 }
+```
 
-#### `lib/app_constants.dart`
+> `lib/app_constants.dart`
 
+```dart
 class AppConstants {
-  ...
+  // ...
   static const String addToDoPath = '/add-to-do';
-  ...
+  // ...
 }
 ```
 
-Create `ToDoParameters` class in `lib/shared/parameters/to_do_parameters.dart`:
+> `lib/app_routing.dart`
+
 ```dart
-#### `lib/shared/parameters/to_do_parameters.dart`
-
-import 'package:to_do_mobile_app/shared/models/to_do_model.dart';
-
-class ToDoParameters {
-  final int id;
-  final String guid;
-
-  ToDoParameters({this.id, this.guid});
-
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data[ToDo.idColumn] = this.id;
-    data[ToDo.guidColumn] = this.guid;
-    return data;
-  }
-}
-```
-
-Add new method named `generateAppTabBarRoute` inside `AppRouting` class:
-```dart
-#### `lib/app_routing.dart`
-
 class AppRouting {
   /// Routing outside the `AppTabBar`.
   static Route<dynamic> generateAppRoute(RouteSettings settings) {
@@ -1169,28 +1296,26 @@ class AppRouting {
 }
 ```
 
-Then in `AppTabBar`, edit method `_buildCupertinoTabScaffold` to generate routes inside the `AppTabBar` for all tabs:
-```dart
-#### `lib/components/app_tab_bar/app_tab_bar.dart`
+> `lib/components/app_tab_bar/app_tab_bar.dart`
 
+```dart
 class AppTabBar extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _AppTabBarState extends State<AppTabBar> {
-  ...
-
+  // ...
   //#region Helpers.
   CupertinoTabScaffold _buildCupertinoTabScaffold() {
     return CupertinoTabScaffold(
       tabBar: CupertinoTabBar(
-        ...
+        // ...
       ),
       tabBuilder: (context, index) {
         final tabItemLabel = _TabItemLabelEnum.values[index];
         return CupertinoTabView(
           builder: (context) {
-            ...
+            // ...
           },
           // Generate routes inside `AppTabBar` for all tabs.
           onGenerateRoute: AppRouting.generateAppTabBarRoute,
@@ -1198,34 +1323,31 @@ class _AppTabBarState extends State<AppTabBar> {
       },
     );
   }
-
-  ...
+  // ...
   //#end-region.
 }
 ```
 
-In `Home` component, add method `_navigateTo` which is called in `onPressed` event when the `Add` button clicked:
-```dart
-#### `lib/components/home/home.dart`
+> `lib/components/home/home.dart`
 
+```dart
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
-
+  // ...
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        ...
+        // ...
       ),
       body: Center(
-        ...
+        // ...
       ),
       floatingActionButton: Padding(
-        ...
+        // ...
         child: FloatingActionButton(
           child: Icon(Icons.add),
           onPressed: () {
@@ -1235,9 +1357,7 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-
-  ...
-
+  // ...
   void _navigateTo(ToDo toDo, String componentPath) {
     var queryParamsObj = ToDoParameters(id: toDo?.id);
     Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
@@ -1246,35 +1366,36 @@ class _HomeState extends State<Home> {
 }
 ```
 
-Run the app and click the `Add` button to get to the `AddToDo` component. After clicking `Add` button, you should see sth like so:
+Run the app and press the `Add` button to get to the `AddToDo` component. After pressing `Add` button, you should see sth like so:
 
 ![alt text](./docs/images/screenshots/home_add-to-do.png "Title")
 
-Next step is we need to save the new to-do item when tapping `Done` or `Back` button.
+Next step is to save the new to-do item when tapping `Done` button.
 
-## Add new item to database.
+### Save new item to database.
 
 In `pubspec.yaml`, add the package `uuid` to generate guid:
-```yaml
-#### `pubspec.yaml`
 
-...
+> `pubspec.yaml`
+
+```yaml
+// ...
 dependencies:
   flutter:
     sdk: flutter
 
-  ...
+  // ...
   uuid: 2.0.4 # Generate Guid.
-...
+// ...
 ```
 
-In `ToDoRepoService`, add methods `addAsyncGet` and `addAsyncPost`:
+Add methods `addAsyncGet` and `addAsyncPost`:
+
+> `lib/shared/repositories/to_do_repo_service.dart`
+
 ```dart
-#### `lib/shared/repositories/to_do_repo_service.dart`
-
 class ToDoRepoService {
-  ...
-
+  // ...
   Future<ToDo> addAsyncGet() async {
     dynamic error;
 
@@ -1294,6 +1415,8 @@ class ToDoRepoService {
 
     try {
       List<dynamic> results;
+      paramObj.updatedDate = DateTime.now().toUtc().toString(); // Need to be the current time before saving to Sqlite db.
+
       await db?.transaction((txn) async {
         var batch = txn.batch();
         batch.insert(
@@ -1321,11 +1444,12 @@ class ToDoRepoService {
 ```
 
 In `AddToDo`, inject `ToDoRepoService` and add methods `_addAsyncGet`, `_addAsyncPost` and `_validateAndSaveForm`, then call `_addAsyncPost` on adding new item. We also need to validate the description's value and capture it into the `ToDo` model in the `build` method:
-```dart
-#### `lib/components/add_to_do/add_to_do.dart`
 
+> `lib/components/add_to_do/add_to_do.dart`
+
+```dart
 class AddToDo extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _AddToDoState extends State<AddToDo> {
@@ -1352,11 +1476,11 @@ class _AddToDoState extends State<AddToDo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        ...
+        // ...
       ),
       body: GestureDetector(
         onTap: () {
-          ...
+          // ...
         },
         child: SafeArea(
           minimum: const EdgeInsets.all(8),
@@ -1366,7 +1490,7 @@ class _AddToDoState extends State<AddToDo> {
                 Form(
                   key: _formKey,
                   child: TextFormField(
-                    ...
+                    // ...
                     validator: (value) => value.isNotEmpty ? null : 'Description can\'t be empty',
                     onSaved: (value) => _newToDo.description = value?.trim(),
                   ),
@@ -1412,7 +1536,9 @@ class _AddToDoState extends State<AddToDo> {
     } catch (e) {
       debugPrint('_addAsyncPost failed');
     } finally {
-      if (isOk) {}
+      if (isOk) {
+        Navigator.pop(context); // Get back to previous page.
+      }
     }
   }
 
@@ -1430,44 +1556,52 @@ class _AddToDoState extends State<AddToDo> {
 
 Run the app and try to add new item -> Then press `Done` button, it'll get back to the `Home` page and you should see the new item is added.
 
-**Code improvements**
-In `ToDoRepoService` class, let's modify method `getListAsync` to show the items based on the column `CreatedDate` in descending order:
-```dart
-#### `lib/shared/repositories/to_do_repo_service.dart`
+### Code improvements.
 
+At `Home` page, I want to see the latest item at the beginning. In `ToDoRepoService` class, let's modify method `getListAsync` to show the items based on the column `UpdatedDate` in descending order:
+
+> `lib/shared/repositories/to_do_repo_service.dart`
+```dart
 class ToDoRepoService {
-  ...
+  // ...
   Future getListAsync(ToDoResourceParameters toDoResourceParameters) async {
-    ...
+    // ...
     var readOnlyList = await _appDbContextService.database?.query(
       AppConstants.tableTodoName, 
       columns: [ToDo.idColumn, ToDo.createdDateColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
       where: '${ToDo.isDeletedColumn} = ?', whereArgs: [0],
-      orderBy: '${ToDo.createdDateColumn} DESC'
+      orderBy: '${ToDo.updatedDateColumn} DESC'
     );
-    ...
+    // ...
   }
 }
 ```
 
-## Summary.
+### Review.
 
 What we have done so far:
-- Showed the list on the `Home` component ordered by `CreatedDate` column in the descending order.
-- Added new component `AddToDo` to implement the Create operation.
+- Showed the list on the `Home` component ordered by `UpdatedDate` column in the descending order.
+- Added new component `AddToDo` to implement the `Create` operation.
 
-Next step is to implement Read, Update and Delete operations.
+Next section is to implement `Read`, `Update` and `Delete` operations.
 
-## Implement Read and Update operations.
+## Implement `Read`, `Update` and `Delete` operations.
 
-For security reason, the Read, Update and Delete operations will be processed based on the `guid`, not `id` column.
+For security reason, the Read, Update and Delete operations will be processed based on the `guid`, not `id` column. Let's make the following changes:
+- In `ToDoRepoService`, add methods `updateGet`, `updatePost`, `deletePost` and `toggleIsDone`.
+- Then create new component named `EditToDo` which is quite similar to `AddToDo` component.
+- In `AppConstants`, add new path for `EditToDo` component.
+- In `AppRouting`, add a new route to get to `EditToDo` component.
+- In `Home`, add event to get to `EditToDo` when users select an item to update. Then add new method named `_toggleIsDoneRadioBtn` to allow users toggle the item as completed/ uncompleted. After that, implement `swipe to delete` to delete item.
 
-In `ToDoRepoService`, add methods `updateGet` and `updatePost`:
+### Implement `Read` and `Update` operations.
+
+First thing first, edit `ToDoRepoService` to add necessary methods:
+
+> `lib/shared/repositories/to_do_repo_service.dart`
 ```dart
-#### `lib/shared/repositories/to_do_repo_service.dart`
-
 class ToDoRepoService {
-  ...
+  // ...
   Future<ToDo> updateGet(ToDo paramObj) async {
     ToDo updatingItem; dynamic error;
 
@@ -1496,6 +1630,8 @@ class ToDoRepoService {
 
     try {
       List<dynamic> results;
+      paramObj.updatedDate = DateTime.now().toUtc().toString();
+
       await db?.transaction((txn) async {
         var batch = txn.batch();
         batch.update(
@@ -1520,13 +1656,45 @@ class ToDoRepoService {
     }
     return Future.error(error);
   }
+
+  Future toggleIsDone(ToDo paramObj) async {
+    dynamic error;
+    var db = _appDbContextService.database;
+
+    try {
+      var paramObjJson = paramObj.toJson();
+      List<dynamic> results;
+      await db?.transaction((txn) async {
+        var batch = txn.batch();
+        batch.update(
+          AppConstants.tableTodoName,
+          // We just need to update `IsDone` column.
+          {ToDo.isDoneColumn: paramObjJson[ToDo.isDoneColumn]},
+          where: '${ToDo.guidColumn} = ?', whereArgs: [paramObj?.guid],
+        );
+        results = await batch.commit();
+        // debugPrint('updatePost results is: ${json.encode(results)}');
+      });
+      if (results.first > 0) {
+        var updatingItemIndex = _appDbContextService.toDos.indexWhere((item) => item.guid == paramObj.guid);
+        if (updatingItemIndex != -1) {
+          _appDbContextService.toDos[updatingItemIndex] = ToDo.fromJson(paramObjJson);
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        return Future.value();
+      }
+    } catch (e) {
+      error = e;
+      debugPrint('ToDoRepoService updatePost failed. error is: $error');
+    }
+    return Future.error(error);
+  }
 }
 ```
 
-Then create new component named `EditToDo` in `lib/components/edit_to_do/edit_to_do.dart`:
-```dart
-#### `lib/components/edit_to_do/edit_to_do.dart`
+> `lib/components/edit_to_do/edit_to_do.dart`
 
+```dart
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -1677,57 +1845,57 @@ class _EditToDoState extends State<EditToDo> {
 }
 ```
 
-In order to get to the `EditToDo` component, we need to modify the following classes:
-- In `AppConstants`, add new path for `EditToDo` component.
-- In `AppRouting`, add a new route to get to `EditToDo` component.
-- In `Home`, add event to get to `EditToDo` when users select an item to update.
+> `lib/app_constants.dart`
+
 ```dart
-#### `lib/app_constants.dart`
-
 class AppConstants {
-  ...
+  // ...
   static const String editToDoPath = '/edit-to-do';
-  ...
+  // ...
 }
+```
 
-#### `lib/app_routing.dart`
+> `lib/app_routing.dart`
 
+```dart
 class AppRouting {
-  ...
+  // ...
   static Route<dynamic> generateAppTabBarRoute(RouteSettings settings) {
     switch (settings.name) {
-      ...
+      // ...
       case AppConstants.editToDoPath:
         return CupertinoPageRoute(
           builder: (_) => EditToDo(toDoParameters: settings.arguments),
         );
-      ...
+      // ...
     }
   }
 }
+```
 
-#### `lib/components/home/home.dart`
+> `lib/components/home/home.dart`
 
+```dart
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
+  // ...
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        ...
+        // ...
       ),
       body: Center(
         child: ListView.builder(
-          ...
+          // ...
           itemBuilder: (BuildContext context, int index) {
             ToDo item = _toDos[index];
             return Dismissible(
-              ...
+              // ...
               child: ListTile(
-                ...
+                // ...
                 onTap: () {
                   _navigateTo(item, AppConstants.editToDoPath);
                 },
@@ -1736,10 +1904,10 @@ class _HomeState extends State<Home> {
           },
         ),
       ),
-      ...
+      // ...
     );
   }
-  ...
+  // ...
   void _navigateTo(ToDo toDo, String componentPath) {
     var queryParamsObj = ToDoParameters(id: toDo?.id, guid: toDo?.guid);
     Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
@@ -1747,28 +1915,31 @@ class _HomeState extends State<Home> {
 }
 ```
 
-The other Update operation is to allows users toggle the radio button at `Home` page as completed/ uncompleted, we need to add new method named `_toggleIsDoneRadioBtn` in `Home` component:
-```dart
-#### `lib/components/home/home.dart`
+> **NOTE:** I use the built-in `Dismissible` widget to allows users to delete item by swiping left or right. You can consider to use the 3rd-party package `flutter_slidable` which is similar to `Dismissible` widget but with more options.
 
+The other `Update` operation is to allow users toggle the radio button at `Home` page as completed/ uncompleted. To do so, we need to add new method named `_toggleIsDoneRadioBtn` in `Home` component:
+
+> `lib/components/home/home.dart`
+
+```dart
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
+  // ...
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        ...
+        // ...
       ),
       body: Center(
         child: ListView.builder(
-          ...
+          // ...
           itemBuilder: (BuildContext context, int index) {
             ToDo item = _toDos[index];
             return Dismissible(
-              ...
+              // ...
               child: ListTile(
                 leading: IconButton(
                   icon: Icon((item?.isDone == true ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
@@ -1777,22 +1948,22 @@ class _HomeState extends State<Home> {
                     _toggleIsDoneRadioBtn(item);
                   },
                 ),
-                ...
+                // ...
               ),
             );
           },
         ),
       ),
-      ...
+      // ...
     );
   }
-  ...
+  // ...
   Future _toggleIsDoneRadioBtn(ToDo updatingToDo) async {
     bool isOk = false;
     try {
       ToDo copiedUpdatingToDo = ToDo.fromJson(updatingToDo.toJson());
 
-      await _toDoRepoService.updatePost(copiedUpdatingToDo);
+      await _toDoRepoService.toggleIsDone(copiedUpdatingToDo);
       isOk = true;
     } catch (e) {
       debugPrint('_toggleCompleted failed');
@@ -1805,16 +1976,17 @@ class _HomeState extends State<Home> {
 }
 ```
 
-Run the app and try to select an item to get to `EditToDo` page. -> Update the description and press `Save` button. -> You should see the selected item updated with new content. -> At `Home` page, try to toggle the radio button to see item updated.
+Run the app and try to select an item to get to `EditToDo` page. -> Update the description and press `Save` button. -> You should see the selected item updated with new content. -> Then, at `Home` page, try to toggle the radio button to see item marked as completed/ uncompleted.
 
-## Implement Delete operation
+### Implement `Delete` operation.
 
-Users can delete the item by swiping to the item to the left. In `ToDoRepoService` class, add new method named `deletePost`:
+Users can delete the item by swiping the item to the left/ right. In `ToDoRepoService` class, add new method named `deletePost`:
+
+> `lib/shared/data/repositories/to_do_repo_service.dart`
+
 ```dart
-#### `lib/shared/data/repositories/to_do_repo_service.dart`
-
 class ToDoRepoService {
-  ...
+  // ...
   Future deletePost(ToDo paramObj) async {
     dynamic error;
     var db = _appDbContextService.database;
@@ -1847,35 +2019,36 @@ class ToDoRepoService {
 ```
 
 Then in `Home` component, edit the `build` method to implement swipe to delete:
-```dart
-#### `lib/components/home/home.dart`
 
+> `lib/components/home/home.dart`
+
+```dart
 class Home extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _HomeState extends State<Home> {
-  ...
+  // ...
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      ...
+      // ...
       body: Center(
         child: ListView.builder(
-          ...
+          // ...
           itemBuilder: (BuildContext context, int index) {
             ToDo item = _toDos[index];
             return Dismissible(
               // Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.
-              key: Key(item?.guid.toString()),
+              key: UniqueKey(), // Or you can use Key(item?.guid.toString()),
               child: ListTile(
-                ...
+                // ...
               ),
               // Provide a function that tells the app what to do after an item has been swiped away.
               onDismissed: (direction) async {
                 await _toDoRepoService.deletePost(item);
                 // Show a snackbar to indicate item deleted.
-                Scaffold.of(context).showSnackBar(SnackBar(content: Text('Item of Id ${item?.id} deleted')));
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text('Item index $index deleted')));
               },
               // Show a red background as the item is swiped away.
               background: Container(color: Colors.red,),
@@ -1883,27 +2056,39 @@ class _HomeState extends State<Home> {
           },
         ),
       ),
-      ...
+      // ...
   }
-  ...
+  // ...
 }
 ```
 
 Run the app and try to swipe left/ right to delete item.
 
-## Toggle light/ dark mode in Setting page.
+### Review.
 
-In this section, I'm going to show you how to organize global variables in a class named `AppGlobals`. Some of the examples of global variables are that we can put into this class the data of user profile and app's settings which are shared across the entire app. I'm going to use the `Settings` component to show the demo of this. This component allows users to turn on/ off the dark mode and we'll keep this setting in a persistent store (local disk which is similar to cookies on web app) using a package named `shared_preferences`. Let's install it:
+What we have done so far:
+- Edited `ToDoRepoService` to support Read, Update and Delete operations.
+- Created new component named `EditToDo` to update the item.
+- Allowed users to toggle item as completed/ uncompleted.
+- Allowed users to delete item by swiping left/ right.
+
+The next section, which is the last one, is to organize global variables in a class named `AppGlobals` and allow users to switch the theme between dark and light mode as an example of using global variables.
+
+## Use global variables and switching theme between light/ dark mode.
+
+In this section, I'm going to show you how to organize global variables in a class named `AppGlobals`. This class comes in handy when we want to share some variables globally in the entire app. Some of the examples of using global variables are that we can put into this class the data of user profile and app's settings which are shared across the entire app. I'm going to use the `Settings` tab component as the demo of this example. This component allows users to turn on/ off the dark mode and we'll keep this setting in a persistent store (local disk which is similar to cookies on web app) using a package named `shared_preferences`. Let's install it:
+
+> `pubspec.yaml`
+
 ```yaml
-#### `pubspec.yaml`
-...
+// ...
 dependencies:
   flutter:
     sdk: flutter
 
-  ...
+  // ...
   shared_preferences: 0.5.7+1 # Provide a persistent store for simple data.
-...
+// ...
 ```
 
 Then we need to make the following changes:
@@ -1914,10 +2099,10 @@ Then we need to make the following changes:
 - Update the `Settings` component to inject `SettingRepoService` and allow users to turn on/ off the dark mode.
 - Convert `MyApp` from `stateless` component into `stateful` component and listen to the setting's changes.
 
-```dart
-#### `lib/app_globals.dart`
+> `lib/app_globals.dart`
 
-...
+```dart
+// ...
 class AppGlobals {
   static SharedPreferences _localStorage;
   static SharedPreferences get localStorage {
@@ -1937,18 +2122,22 @@ class AppGlobals {
     }
   }
 }
+```
 
-#### `lib/main.dart`
+> `lib/main.dart`
 
-...
+```dart
+// ...
 void main() async {
-  ...
+  // ...
   await AppGlobals.init();
-  ...
+  // ...
 }
+```
 
-### `lib/shared/data/repositories/setting_repo_service.dart`
+> `lib/shared/data/repositories/setting_repo_service.dart`
 
+```dart
 import 'package:flutter/foundation.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:to_do_mobile_app/app_globals.dart';
@@ -1972,21 +2161,25 @@ class SettingRepoService {
     return Future.error(error);
   }
 }
+```
 
-#### `lib/app_injections.dart`
+> `lib/app_injections.dart`
 
+```dart
 class AppInjections {
   static Future<void> setupDI() async {
-    ...
+    // ...
     getIt.registerSingletonAsync<SettingRepoService>(() async => SettingRepoService());
   }
 }
+```
 
-#### `lib/components/settings/settings.dart`
+> `lib/components/settings/settings.dart`
 
-...
+```dart
+// ...
 class Settings extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _SettingsState extends State<Settings> {
@@ -2025,11 +2218,13 @@ class _SettingsState extends State<Settings> {
     );
   }
 }
+```
 
-#### `lib/my_app.dart`
+> `lib/my_app.dart`
 
+```dart
 class MyApp extends StatefulWidget {
-  ...
+  // ...
 }
 
 class _MyAppState extends State<MyApp> {
@@ -2047,9 +2242,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _isDarkModeSettingObservableSubscriber = _settingRepoService.isDarkModeSettingObservable.listen((_switchBtnValue) {
+    _isDarkModeSettingObservableSubscriber = _settingRepoService.isDarkModeSettingObservable.listen((isDarkMode) {
       setState(() {
-        _isDarkMode = _switchBtnValue;
+        _isDarkMode = isDarkMode;
       });
     });
   }
@@ -2057,11 +2252,11 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      ...
+      // ...
       theme: ThemeData(
         brightness: _isDarkMode ? Brightness.dark : Brightness.light,
       ),
-      ...
+      // ...
     );
   }
 
@@ -2078,20 +2273,19 @@ Run the app and try to enable dark mode in `Settings` page, you should see the d
 ![alt text](./docs/images/screenshots/home-list-dark.png "Title")
 ![alt text](./docs/images/screenshots/settings-dark.png "Title")
 
-## Summary.
+### Review.
 
 What we have done so far:
-- Implemented Read and Update operations.
-- Implemented Delete operation.
+- Created `AppGlobals` class to keep global variables.
 - Allow users to toggle the light/ dark mode for the entire app in Settings page and keep this setting value in local storage using `shared_preferences` package.
 
 ## Conclusion.
 
-Woa, we finish the app and I hope you enjoy this article. Please leave some comments if you think we can improve it better so that we can learn from each other. Thanks.
+Woa, finally we finish the app and I hope you enjoy this article. Please leave your comments if you think I can improve it better so that we can learn from each other. Thanks.
 
 --------------------------------------------------
 
-# References:
+## References:
 
 - [Flutter: Best Practices and Tips](https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5)
 - [AngularAngular Observable Data Services](https://coryrylan.com/blog/angular-observable-data-services)

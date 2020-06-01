@@ -1,14 +1,16 @@
 # to_do_mobile_app
 
-A `to-do` Flutter project using following technologies:
-- Mobile app: `Flutter`.
-- Back-end: Serverless `AWS Amplify`.
+A sample cross-platform mobile app `to-do` using Flutter framework.
 
 ## Getting Started.
 
-Underdevelopment.
+Install [Flutter](https://flutter.dev/docs) properly on your machine and open this project in `VSCode`. Then press `ctrl + F5` to run it on Simulator (iOS).
 
 ## References.
+
+- [Flutter: Best Practices and Tips](https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5)
+- [AngularAngular Observable Data Services](https://coryrylan.com/blog/angular-observable-data-services)
+- [Building a Cupertino app with Flutter](https://codelabs.developers.google.com/codelabs/flutter-cupertino/#0)
 
 ----------------------------------------
 

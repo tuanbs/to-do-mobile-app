@@ -1,0 +1,2216 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Table of contents.</title>
+        <style>
+</style>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" integrity="sha384-yFRtMMDnQtDRO8rLpMIKrtPCD5jdktao2TV19YiZYWMDkUR5GQZR/NOVTdquEx1j" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+        <link href="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.css" rel="stylesheet" type="text/css">
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        
+        <script src="https://cdn.jsdelivr.net/npm/katex-copytex@latest/dist/katex-copytex.min.js"></script>
+        
+    </head>
+    <body class="vscode-light">
+        <h2 id="table-of-contents">Table of contents.</h2>
+<ol>
+<li><a href="#table-of-contents">Table of contents.</a></li>
+<li><a href="#what-is-this">What is this.</a></li>
+<li><a href="#introduction">Introduction.</a></li>
+<li><a href="#prerequisites">Prerequisites.</a></li>
+<li><a href="#create-the-initial-flutter-app">Create the initial <code>Flutter</code> app.</a></li>
+<li><a href="#folder-structure">Folder structure.</a>
+<ol>
+<li><a href="#explanations">Explanations</a></li>
+</ol>
+</li>
+<li><a href="#reorganize-the-initial-app-and-navigate-with-named-routes">Reorganize the initial app and navigate with named routes.</a>
+<ol>
+<li><a href="#create-home-component">Create <code>Home</code> component.</a></li>
+<li><a href="#create-myapp-component">Create <code>MyApp</code> component.</a></li>
+<li><a href="#modify-mainapp-file">Modify <code>main.app</code> file.</a></li>
+<li><a href="#navigate-between-components-using-named-route">Navigate between components using named route.</a></li>
+<li><a href="#code-improvements">Code improvements</a></li>
+<li><a href="#review">Review.</a></li>
+</ol>
+</li>
+<li><a href="#bottom-navigation-bar-tab-bar">Bottom Navigation Bar (Tab Bar)</a>
+<ol>
+<li><a href="#explanations-1">Explanations.</a></li>
+<li><a href="#code-improvements-1">Code improvements.</a></li>
+<li><a href="#review-1">Review.</a></li>
+</ol>
+</li>
+<li><a href="#create-pre-populated-database-and-use-dependency-injection-di--repository-patterns">Create pre-populated database and use <code>Dependency Injection (DI)</code> &amp; <code>Repository</code> patterns.</a>
+<ol>
+<li><a href="#init-sqlite-database">Init Sqlite database.</a></li>
+<li><a href="#dependency-injection-di-and-repository-patterns">Dependency Injection (DI) and Repository patterns.</a></li>
+<li><a href="#review-2">Review.</a></li>
+</ol>
+</li>
+<li><a href="#implement-observable-pattern-using-rxdart">Implement <code>Observable</code> pattern using <code>RxDart</code>.</a>
+<ol>
+<li><a href="#show-list-of-to-do-items-in-console-log">Show list of to-do items in console log.</a></li>
+<li><a href="#show-list-on-home-page">Show list on <code>Home</code> page.</a></li>
+<li><a href="#code-improvements-use-listviewbuilder-for-a-long-list">Code improvements: Use <code>ListView.builder</code> for a long list.</a></li>
+<li><a href="#review-3">Review.</a></li>
+</ol>
+</li>
+<li><a href="#implement-create-operation">Implement <code>Create</code> operation.</a>
+<ol>
+<li><a href="#save-new-item-to-database">Save new item to database.</a></li>
+<li><a href="#code-improvements-2">Code improvements.</a></li>
+<li><a href="#review-4">Review.</a></li>
+</ol>
+</li>
+<li><a href="#implement-read-update-and-delete-operations">Implement <code>Read</code>, <code>Update</code> and <code>Delete</code> operations.</a>
+<ol>
+<li><a href="#implement-read-and-update-operations">Implement <code>Read</code> and <code>Update</code> operations.</a></li>
+<li><a href="#implement-delete-operation">Implement <code>Delete</code> operation.</a></li>
+<li><a href="#review-5">Review.</a></li>
+</ol>
+</li>
+<li><a href="#use-global-variables-and-switching-theme-between-light-dark-mode">Use global variables and switching theme between light/ dark mode.</a>
+<ol>
+<li><a href="#review-6">Review.</a></li>
+</ol>
+</li>
+<li><a href="#conclusion">Conclusion.</a></li>
+<li><a href="#references">References:</a></li>
+</ol>
+<h2 id="what-is-this">What is this.</h2>
+<p>This is the step-by-step instructions on how to create this app from scratch. The final app will look like this:</p>
+<p><img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/iOS-demo.gif" alt="alt text" title="Title">
+<img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/Android-demo.gif" alt="alt text" title="Title"></p>
+<h2 id="introduction">Introduction.</h2>
+<p>Welcome to my first article on how to write a cross-platform mobile app using <code>Flutter</code>. -&gt; What is <code>Flutter</code>? -&gt; Please check <a href="https://flutter.dev/docs">here</a> to learn about it. -&gt; In my words, it's a framework used to create cross-platform app (iOS, Android and Website). It's similar to <code>React Native</code> or <code>Ionic</code> frameworks if you've heard of them before.</p>
+<p>You would ask me the question why I choose <code>Flutter</code> instead of <code>React Native</code> or <code>Ionic</code>. Well, I used those 2 frameworks before and I don't like it. The main reason I choose it because I come from <code>.Net</code> and <code>Angular</code> backgrounds, and I see I can reuse my knowledge and skills of <code>.Net</code> and <code>Angular</code> into <code>Flutter</code>. For example, one of my hobby apps uses <code>.Net Core</code> for its back-end API, <code>Angular</code> for the website and <code>Flutter</code> for the mobile app. And I see I can reuse about 80% of the concepts from <code>.Net</code> and <code>Angular</code> into <code>Flutter</code> app. So I would like to share it in this article.</p>
+<p>What you'll learn in this post:</p>
+<ul>
+<li>How to build a <code>To-do</code> app that runs on <code>iOS</code> and <code>Android</code>.</li>
+<li>Reuse some concepts from <code>.Net</code> and <code>Angular</code> into <code>Flutter</code> app.</li>
+</ul>
+<blockquote>
+<p><strong>NOTE:</strong> In this article, I'm going to create the app that will run based on the local database named <code>Sqlite</code>, so that it doesn't need to be connected to internet. The roadmap (if I have time) for this project is to make it similar to the Apple <code>Notes</code> app on <code>iOS</code> devices, so that when it's connected to internet, it'll sync its local data with the server, and users can see their notes from different platforms (iOS, Android and website).</p>
+</blockquote>
+<h2 id="prerequisites">Prerequisites.</h2>
+<p>This tutorial is for everyone who has experience with at least one of the programming languages such as <code>C#, Java, Javascript etc...</code>. However it would be easier for you to follow along with the code if you have the followings:</p>
+<ul>
+<li>Basic understanding of <code>Flutter</code> and <code>Dart</code>.</li>
+<li>Familiar with some front-end frameworks like <code>Angular</code> or <code>React</code>.</li>
+</ul>
+<p>To code along with the code-flow in this post, please prepare the followings:</p>
+<ul>
+<li>Install the latest version of <code>Flutter</code> properly on your system. If you don't know that, check <a href="https://flutter.dev/docs">here</a> for more information.</li>
+<li>Install Visual Studio Code (VSCode). You can use your preferred editor such as <code>Atom</code> or <code>Android Studio</code>.</li>
+</ul>
+<blockquote>
+<p><strong>NOTE:</strong> At the time of writing this article, I use <code>Flutter</code> version <code>1.17.0</code> on macOS Catalina.</p>
+</blockquote>
+<p>Enough talking, let's create the app.</p>
+<h2 id="create-the-initial-flutter-app">Create the initial <code>Flutter</code> app.</h2>
+<p>To create the initial app, run cmd:</p>
+<pre><code class="language-bash"><div>flutter create my_notes_flutter_mobile
+</div></code></pre>
+<p>Open the app in <code>VSCode</code> and press <code>Ctrl + F5</code>, then make sure you see the initial screen of flutter app without any error before moving to next step.</p>
+<h2 id="folder-structure">Folder structure.</h2>
+<p>I make this app's folder structure similar to the <code>Angular</code> app version I created before:</p>
+<pre><code><code><div>my_notes_flutter_mobile
+  assets/
+    database/
+      to_do_mobile.db
+    images/
+      ...
+  docs/
+    database_design/
+      ...
+    images/
+      ...
+  lib/
+    components/
+      app_tab_bar/
+        app_tab_bar.dart
+      add_to_do/
+        add_to_do.dart      
+      edit_to_do/
+        edit_to_do.dart
+      home/
+        home.dart
+      settings/
+        settings.dart
+    shared/
+      components/
+        ...
+      data/
+        repositories/
+          setting_repo_service.dart
+          to_do_repo_service.dart
+      models/
+        to_do_model.dart
+      parameters/
+        to_do_parameters.dart
+        to_do_resource_parameters.dart
+        ...
+      services/
+        app_db_context_service.dart
+    app_constants.dart
+    app_globals.dart
+    app_injections.dart
+    app_routing.dart
+    main.dart
+    my_app.dart
+  test/
+    ...
+  README.md
+  CODE_FLOW.md
+  pubspec.yaml
+  ...
+</div></code></code></pre>
+<h3 id="explanations">Explanations</h3>
+<p>In <code>Angular</code> or <code>React</code> app, we use the concept of <code>component</code> to implement the separation of concerns in software development. We can use this <code>components</code> approach in <code>Flutter</code> app as well.</p>
+<blockquote>
+<p><strong>NOTE:</strong> I, however, encourage people to use whatever the folder structure they prefer as long as it makes sense to them. And try to use the similar structure into different frameworks regardless of what programming language those frameworks are using. This approach enables you as a software developer to maintain the apps easier without worrying learning different concepts from different frameworks (or programming languages).</p>
+</blockquote>
+<h2 id="reorganize-the-initial-app-and-navigate-with-named-routes">Reorganize the initial app and navigate with named routes.</h2>
+<p>In this step, we're going to reorganize the initial app using our folder structure mentioned above.</p>
+<h3 id="create-home-component">Create <code>Home</code> component.</h3>
+<p>Open <code>main.dart</code> file and refactor <code>MyHonePage</code> into <code>Home</code>.</p>
+<blockquote>
+<p><strong>Tips:</strong> To refactor class's name (or variables and methods) in <code>VSCode</code>, right-click on the class's name and select <code>Rename Symbol</code>. Then input the new name for it.</p>
+</blockquote>
+<p>Move this <code>Home</code> component into <code>lib/components/home.dart</code> file. By default, <code>Flutter</code> generates a new stateful component with the <code>title</code> argument inside its constructor. However, as we're not going to set component's title via its constructor, I prefer the title sticks inside its own component. So let's remove the <code>title</code> argument from its constructor like so:</p>
+<blockquote>
+<p><code>lib/components/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/cupertino.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> title = <span class="hljs-string">'Home'</span>;
+
+  <span class="hljs-meta">@override</span>
+  _HomeState createState() =&gt; _HomeState();
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{  
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(Home.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: &lt;Widget&gt;[
+            Text(
+              <span class="hljs-string">'This is Home page.'</span>,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+</div></code></pre>
+<h3 id="create-myapp-component">Create <code>MyApp</code> component.</h3>
+<p>Open <code>main.dart</code> and move <code>MyApp</code> class into <code>my_app.dart</code> file. Then import the <code>Home</code> component.</p>
+<blockquote>
+<p><strong>NOTE:</strong> To avoid potential issue, you should import with the prefix <code>package:&lt;path_to_component&gt;</code>. For example: <code>import 'package:to_do_mobile_app/components/home/home.dart';</code></p>
+</blockquote>
+<h3 id="modify-mainapp-file">Modify <code>main.app</code> file.</h3>
+<p>Open <code>main.app</code> file and mark its <code>main()</code> function as <code>async</code> because we will need to have some configurations set up later on before running the app:</p>
+<blockquote>
+<p><code>lib/main.app</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">void</span> main() <span class="hljs-keyword">async</span> {
+  <span class="hljs-keyword">var</span> myApp = MyApp();
+  runApp(myApp);
+}
+</div></code></pre>
+<p>Now we're able to run the app using our own new folder structure. Make sure there's no error before moving to next step.</p>
+<h3 id="navigate-between-components-using-named-route">Navigate between components using named route.</h3>
+<p>Similar to <code>Angular</code> and <code>React</code>, in <code>Flutter</code> we can show the component based on its route name. Here I'm using <code>onGenerateRoute</code> to define app's routes. Let's modify the <code>MyApp</code> component as following:</p>
+<blockquote>
+<p><code>lib/my_app.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyApp</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatelessWidget</span> </span>{
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> MaterialApp(
+      title: <span class="hljs-string">'Flutter Demo'</span>,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: <span class="hljs-string">'/'</span>,
+      onGenerateRoute: (RouteSettings settings) {
+        <span class="hljs-keyword">switch</span> (settings.name) {
+          <span class="hljs-keyword">case</span> <span class="hljs-string">'/'</span>:
+            <span class="hljs-keyword">return</span> CupertinoPageRoute(
+              builder: (_) =&gt; Home(),
+            );
+          <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'No route defined for <span class="hljs-subst">${settings.name}</span>'</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+        }
+      },
+      <span class="hljs-comment">// home: Home(title: 'To Do Demo'),</span>
+    );
+  }
+}
+</div></code></pre>
+<p>As the app gets scaled, we would have lots of routes and business logic in each route. So it's a best practice to separate the routes section into another class named <code>AppRouting</code>. This approach can also be used in <code>Angular</code> and <code>React</code>. Let's open <code>app_routing.dart</code> file and define the following routes:</p>
+<blockquote>
+<p><code>lib/app_routing.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/cupertino.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/components/home/home.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppRouting</span> </span>{
+    <span class="hljs-keyword">static</span> Route&lt;<span class="hljs-keyword">dynamic</span>&gt; generateAppRoute(RouteSettings settings) {
+        <span class="hljs-keyword">switch</span> (settings.name) {
+          <span class="hljs-keyword">case</span> <span class="hljs-string">'/'</span>:
+            <span class="hljs-keyword">return</span> CupertinoPageRoute(
+              builder: (_) =&gt; Home(),
+            );
+          <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'No route defined for <span class="hljs-subst">${settings.name}</span>'</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+        }
+    }
+}
+</div></code></pre>
+<p>Then use this setting inside <code>MyApp</code> component as follow:</p>
+<blockquote>
+<p><code>lib/my_app.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/cupertino.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_routing.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyApp</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatelessWidget</span> </span>{
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> MaterialApp(
+      title: <span class="hljs-string">'Flutter Demo'</span>,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      initialRoute: <span class="hljs-string">'/'</span>,
+      onGenerateRoute: AppRouting.generateAppRoute,
+    );
+  }
+}
+</div></code></pre>
+<h3 id="code-improvements">Code improvements</h3>
+<p>As you can see we use the string <code>/</code> to name the <code>Home</code> component's route in <code>MyApp</code> class. And then inside <code>AppRouting</code> class, we repeat the <code>/</code> again to show the <code>Home</code> component. It's better to put those constant values into one place, so that when we update it, it would reflect the change to all of its references. This approach also reduces the duplicated code amd makes the app more maintainable. Let's create a class named <code>AppConstants</code>:</p>
+<blockquote>
+<p><code>/lib/app_constants.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/widgets.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppConstants</span> </span>{
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> homePath = <span class="hljs-string">'/'</span>;
+}
+</div></code></pre>
+<p>Then update the <code>MyApp</code> and <code>AppRouting</code> as follow:</p>
+<blockquote>
+<p><code>/lib/my_app.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-comment">// ...</span>
+initialRoute: AppConstants.homePath,
+<span class="hljs-comment">// ...</span>
+</div></code></pre>
+<blockquote>
+<p><code>/lib/app_routing.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">switch</span> (settings.name) {
+    <span class="hljs-keyword">case</span> AppConstants.homePath:
+      <span class="hljs-keyword">return</span> CupertinoPageRoute(
+          builder: (_) =&gt; Home(),
+      );
+    <span class="hljs-keyword">default</span>:
+      <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'No route defined for <span class="hljs-subst">${settings.name}</span>'</span>);
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+}
+</div></code></pre>
+<h3 id="review">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Structured the app's files and folders that is similar to <code>Angular</code> or <code>React</code>.</li>
+<li>Navigating the app using named routes.</li>
+<li>Put duplicated code and constants values inside <code>AppConstants</code> class.</li>
+</ul>
+<h2 id="bottom-navigation-bar-tab-bar">Bottom Navigation Bar (Tab Bar)</h2>
+<p>In this section, we're going to implement bottom navigation bar (tab bar) using <code>Cupertino (iOS) style</code>.</p>
+<p>You would ask the question why not <code>Android</code>, but <code>iOS style</code>? Well, <code>Android</code> uses <code>Hierarchical Navigation</code> which users have to trace back to the root of the app in order to go to another tab. Imagine you're at the 5th view of the 1st tab, and in order to get to the 2nd tab, you have to press the <code>Back</code> button 5 times to get back to the root and select the 2nd tab. So I think that's really annoying. -&gt; That's why I prefer to use the <code>iOS style</code> bottom navigation which is called <code>Flat Navigation</code>. In flat navigation, users can jump between tabs without going back to the root of the app.</p>
+<p>Let's create 2 components named <code>Settings</code> and <code>AppTabBar</code>. The <code>AppTabBar</code> has 2 tabs <code>Home</code> and <code>Settings</code> which will show <code>Home</code> and <code>Settings</code> component respectively when it's tapped:</p>
+<blockquote>
+<p><code>lib/settings/settings.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/cupertino.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Settings</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  Settings({Key key}) : <span class="hljs-keyword">super</span>(key: key);
+  
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> title = <span class="hljs-string">'Settings'</span>;
+
+  <span class="hljs-meta">@override</span>
+  _SettingsState createState() =&gt; _SettingsState();
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_SettingsState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Settings</span>&gt; </span>{  
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(Settings.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: &lt;Widget&gt;[
+            Text(
+              <span class="hljs-string">'This is Settings page.'</span>,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_tab_bar/app_tab_bar.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/cupertino.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/components/home/home.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/components/settings/settings.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppTabBar</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-meta">@override</span>
+  _AppTabBarState createState() =&gt; _AppTabBarState();
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_AppTabBarState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">AppTabBar</span>&gt; </span>{
+  <span class="hljs-comment">//#region Lifecycle.</span>
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> _buildCupertinoTabScaffold();
+  }
+
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> dispose() {
+    <span class="hljs-keyword">super</span>.dispose();
+  }
+  <span class="hljs-comment">//#end-region.</span>
+
+  <span class="hljs-comment">//#region Helpers.</span>
+  CupertinoTabScaffold _buildCupertinoTabScaffold() {
+    <span class="hljs-keyword">return</span> CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        items: &lt;BottomNavigationBarItem&gt;[
+          _buildTabBarItem(CupertinoIcons.home, Home.title),
+          _buildTabBarItem(CupertinoIcons.settings, Settings.title),
+        ],
+      ),
+      tabBuilder: (context, index) {
+        <span class="hljs-keyword">return</span> CupertinoTabView(
+          builder: (context) {
+            <span class="hljs-keyword">switch</span> (index) {
+              <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:
+                <span class="hljs-keyword">return</span> Home();
+              <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:
+                <span class="hljs-keyword">return</span> Settings();
+              <span class="hljs-keyword">default</span>:
+                <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'Unexpected tab'</span>);
+                <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+            }
+          },
+        );
+      },
+    );
+  }
+
+  BottomNavigationBarItem _buildTabBarItem(IconData iconData, <span class="hljs-built_in">String</span> title) {
+    <span class="hljs-keyword">return</span> BottomNavigationBarItem(
+      icon: Icon(iconData),
+      title: Text(title),
+    );
+  }
+  <span class="hljs-comment">//#end-region.</span>
+}
+</div></code></pre>
+<h3 id="explanations-1">Explanations.</h3>
+<ul>
+<li><code>tabBar</code>: <code>CupertinoTabBar</code> requires at least two items, or you will see errors at run-time. Those tab items are shown at the bottom of the app.</li>
+<li><code>tabBuilder</code>: is responsible for making sure the specified tab is built. In this case, it calls a class constructor to set up each respective tab, wrapping all two in <code>CupertinoTabView</code> and <code>CupertinoPageScaffold</code>.</li>
+</ul>
+<p>Now, let's edit the following classes:</p>
+<ul>
+<li>In <code>AppConstant</code>, refactor the <code>homePath</code> into <code>appTabBarPath</code>:</li>
+<li>In <code>AppRouting</code>, replace the <code>Home</code> component with the <code>AppTabBar</code> component.</li>
+</ul>
+<blockquote>
+<p><code>lib/app_constants.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppConstants</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> appTabBarPath = <span class="hljs-string">'/'</span>;
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_routing.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppRouting</span> </span>{
+    <span class="hljs-keyword">static</span> Route&lt;<span class="hljs-keyword">dynamic</span>&gt; generateAppRoute(RouteSettings settings) {
+        <span class="hljs-keyword">switch</span> (settings.name) {
+          <span class="hljs-keyword">case</span> AppConstants.appTabBarPath:
+            <span class="hljs-keyword">return</span> CupertinoPageRoute(
+              builder: (_) =&gt; AppTabBar(),
+            );
+          <span class="hljs-keyword">default</span>:
+            <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'No route defined for <span class="hljs-subst">${settings.name}</span>'</span>);
+            <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+        }
+    }
+}
+</div></code></pre>
+<p>Run the app and you should see the following screen:</p>
+<p><img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/app-tab-bar.png" alt="alt text" title="Title"></p>
+<p>Try to tap the <code>Settings</code> tab to see the <code>Settings</code> page.</p>
+<h3 id="code-improvements-1">Code improvements.</h3>
+<p>Let's improve the code a little bit. Instead of using <code>index</code> number of tab item, we can make it human-readable by using <code>enum</code>. Add this line at the beginning of your class:</p>
+<blockquote>
+<p><code>lib/app_tab_bar/app_tab_bar.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">enum</span> _TabItemLabelEnum { home, settings }
+</div></code></pre>
+<p>Then edit <code>_buildCupertinoTabScaffold</code> method as follow:</p>
+<pre><code class="language-dart"><div>CupertinoTabScaffold _buildCupertinoTabScaffold() {
+  <span class="hljs-keyword">return</span> CupertinoTabScaffold(
+    tabBar: CupertinoTabBar(
+      items: &lt;BottomNavigationBarItem&gt;[
+        _buildTabBarItem(CupertinoIcons.home, Home.title),
+        _buildTabBarItem(CupertinoIcons.settings, Settings.title),
+      ],
+    ),
+    tabBuilder: (context, index) {
+      <span class="hljs-keyword">final</span> tabItemLabel = _TabItemLabelEnum.values[index];
+      <span class="hljs-keyword">return</span> CupertinoTabView(
+        builder: (context) {
+          <span class="hljs-keyword">switch</span> (tabItemLabel) {
+            <span class="hljs-keyword">case</span> _TabItemLabelEnum.home:
+              <span class="hljs-keyword">return</span> Home();
+            <span class="hljs-keyword">case</span> _TabItemLabelEnum.settings:
+              <span class="hljs-keyword">return</span> Settings();
+            <span class="hljs-keyword">default</span>:
+              <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'Unexpected tab'</span>);
+              <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+          }
+        },
+      );
+    },
+  );
+}
+</div></code></pre>
+<h3 id="review-1">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Created another component named <code>Settings</code> with basic UI.</li>
+<li>Implemented <code>Bottom Navigation Bar</code> (tab bar) with iOS style and put it into a component named <code>AppTabBar</code>.</li>
+<li>Using <code>enum</code> instead of <code>index</code> to make the code more human-readable.</li>
+</ul>
+<h2 id="create-pre-populated-database-and-use-dependency-injection-di--repository-patterns">Create pre-populated database and use <code>Dependency Injection (DI)</code> &amp; <code>Repository</code> patterns.</h2>
+<p>In this section, we're going to use <code>Sqlite</code> as local database so that the app can store its data locally. I already created the sql script that defines all tables for the app's database. This sql script is generated using <code>.Net EF Core</code> which will not be covered in this tutorial as this is the <code>Flutter</code> topic. Later, if have time, I'll write another tutorial on <code>.Net Core</code> and <code>EF Core</code> to create the back-end API for the app. Below is the sql script for Sqlite:</p>
+<pre><code class="language-sql"><div><span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> <span class="hljs-string">"AppUsers"</span> (
+    <span class="hljs-string">"Id"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">CONSTRAINT</span> <span class="hljs-string">"PK_AppUsers"</span> PRIMARY <span class="hljs-keyword">KEY</span> AUTOINCREMENT,
+    <span class="hljs-string">"Guid"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"CreatedDate"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"UpdatedDate"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"IsDeleted"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span>,
+    <span class="hljs-string">"AccessFailedCount"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"Email"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"Gender"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"PhoneNumber"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"UserName"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"DateOfBirth"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"FirstName"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"MiddleName"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"LastName"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-literal">NULL</span>
+);
+
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">TABLE</span> <span class="hljs-string">"ToDos"</span> (
+    <span class="hljs-string">"Id"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">CONSTRAINT</span> <span class="hljs-string">"PK_ToDos"</span> PRIMARY <span class="hljs-keyword">KEY</span> AUTOINCREMENT,
+    <span class="hljs-string">"Guid"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"CreatedDate"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"UpdatedDate"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"IsDeleted"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span>,
+    <span class="hljs-string">"Description"</span> <span class="hljs-built_in">TEXT</span> <span class="hljs-keyword">NOT</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-string">"IsDone"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-literal">NULL</span> <span class="hljs-keyword">DEFAULT</span> <span class="hljs-number">0</span>,
+    <span class="hljs-string">"AppUserId"</span> <span class="hljs-built_in">INTEGER</span> <span class="hljs-literal">NULL</span>,
+    <span class="hljs-keyword">CONSTRAINT</span> <span class="hljs-string">"FK_ToDos_AppUsers_AppUserId"</span> <span class="hljs-keyword">FOREIGN</span> <span class="hljs-keyword">KEY</span> (<span class="hljs-string">"AppUserId"</span>) <span class="hljs-keyword">REFERENCES</span> <span class="hljs-string">"AppUsers"</span> (<span class="hljs-string">"Id"</span>) <span class="hljs-keyword">ON</span> <span class="hljs-keyword">DELETE</span> RESTRICT
+);
+
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">"IX_AppUsers_Email"</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">"AppUsers"</span> (<span class="hljs-string">"Email"</span>);
+
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">"IX_AppUsers_Guid"</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">"AppUsers"</span> (<span class="hljs-string">"Guid"</span>);
+
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">"IX_AppUsers_UserName"</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">"AppUsers"</span> (<span class="hljs-string">"UserName"</span>);
+
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">"IX_ToDos_AppUserId"</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">"ToDos"</span> (<span class="hljs-string">"AppUserId"</span>);
+
+<span class="hljs-keyword">CREATE</span> <span class="hljs-keyword">UNIQUE</span> <span class="hljs-keyword">INDEX</span> <span class="hljs-string">"IX_ToDos_Guid"</span> <span class="hljs-keyword">ON</span> <span class="hljs-string">"ToDos"</span> (<span class="hljs-string">"Guid"</span>);
+
+<span class="hljs-comment">---------- Insert some sample data.</span>
+<span class="hljs-keyword">Insert</span> <span class="hljs-keyword">Or</span> <span class="hljs-keyword">Replace</span> <span class="hljs-keyword">Into</span> ToDos(<span class="hljs-keyword">Id</span>, [Guid], CreatedDate, UpdatedDate, [Description], IsDone) <span class="hljs-keyword">Values</span> (<span class="hljs-number">1</span>, <span class="hljs-keyword">lower</span>(<span class="hljs-keyword">hex</span>(randomblob(<span class="hljs-number">16</span>))), datetime(<span class="hljs-string">'now'</span>), datetime(<span class="hljs-string">'now'</span>), <span class="hljs-string">"Learn Swift"</span>, <span class="hljs-number">0</span>);
+<span class="hljs-keyword">Insert</span> <span class="hljs-keyword">Or</span> <span class="hljs-keyword">Replace</span> <span class="hljs-keyword">Into</span> ToDos(<span class="hljs-keyword">Id</span>, [Guid], CreatedDate, UpdatedDate, [Description], IsDone) <span class="hljs-keyword">Values</span> (<span class="hljs-number">2</span>, <span class="hljs-keyword">lower</span>(<span class="hljs-keyword">hex</span>(randomblob(<span class="hljs-number">16</span>))), datetime(<span class="hljs-string">'now'</span>), datetime(<span class="hljs-string">'now'</span>), <span class="hljs-string">"Learn Flutter"</span>, <span class="hljs-number">1</span>);
+<span class="hljs-keyword">Insert</span> <span class="hljs-keyword">Or</span> <span class="hljs-keyword">Replace</span> <span class="hljs-keyword">Into</span> ToDos(<span class="hljs-keyword">Id</span>, [Guid], CreatedDate, UpdatedDate, [Description], IsDone) <span class="hljs-keyword">Values</span> (<span class="hljs-number">3</span>, <span class="hljs-keyword">lower</span>(<span class="hljs-keyword">hex</span>(randomblob(<span class="hljs-number">16</span>))), datetime(<span class="hljs-string">'now'</span>), datetime(<span class="hljs-string">'now'</span>), <span class="hljs-string">"Learn .Net Core"</span>, <span class="hljs-number">0</span>);
+</div></code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> In this tutorial, we're not going to use the <code>AppUsers</code> table. I leave it here for the next tutorial whose topic would be about authentication and sync the local database with the server database.</p>
+</blockquote>
+<p>Next, you need to download <a href="https://github.com/sqlitebrowser/sqlitebrowser">DB Browser for Sqlite</a> app to create database by executing the sql script. Then name your local db as <code>to_do_mobile.db</code> and put it in <code>assets/database/</code> folder. If you have issue generating database, you can use the one I attached in the source code on Github.</p>
+<h3 id="init-sqlite-database">Init Sqlite database.</h3>
+<p>After having the database, you need to tell <code>Flutter</code> that you want to use this database file inside the app as well as manipulating it to store the data. To achieve this, you need to specify your assets and install necessary packages to work with <code>sqlite</code> db in the <code>pubspec.yaml</code> file. Edit <code>pubspec.yaml</code> as below:</p>
+<blockquote>
+<p><code>pubspec.yaml</code></p>
+</blockquote>
+<pre><code class="language-yaml"><div><span class="hljs-comment"># ...</span>
+<span class="hljs-attr">dependencies:</span>
+<span class="hljs-attr">  flutter:</span>
+<span class="hljs-attr">    sdk:</span> <span class="hljs-string">flutter</span>
+
+<span class="hljs-attr">  sqflite:</span> <span class="hljs-number">1.3</span><span class="hljs-number">.0</span><span class="hljs-string">+1</span>
+<span class="hljs-attr">  path_provider:</span> <span class="hljs-number">1.6</span><span class="hljs-number">.7</span>
+<span class="hljs-attr">  path:</span> <span class="hljs-number">1.6</span><span class="hljs-number">.4</span>
+<span class="hljs-attr">  intl:</span> <span class="hljs-number">0.16</span><span class="hljs-number">.1</span>
+<span class="hljs-comment"># ...</span>
+<span class="hljs-attr">flutter:</span>
+  <span class="hljs-comment"># ...</span>
+<span class="hljs-attr">  assets:</span>
+    <span class="hljs-comment"># ...</span>
+<span class="hljs-bullet">    -</span> <span class="hljs-string">assets/database/to_do_mobile.db</span>
+<span class="hljs-comment"># ...</span>
+</div></code></pre>
+<p>As the names of database and its tables are constants, we should add them in <code>AppConstants</code> class:</p>
+<blockquote>
+<p><code>/lib/app_constants.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-comment">// ...</span>
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> databaseName = <span class="hljs-string">'to_do_mobile.db'</span>;
+<span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> tableTodoName = <span class="hljs-string">'ToDos'</span>;
+<span class="hljs-comment">// ...</span>
+</div></code></pre>
+<p>Next, similar to <code>.Net Core</code> concept, I'm going to create the service class named <code>AppDbContextService</code> in the <code>lib/shared/services</code> folder to manipulate the db:</p>
+<blockquote>
+<p><code>lib/shared/services/app_db_context_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'dart:io'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'dart:typed_data'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/foundation.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/services.dart'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:path/path.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:sqflite/sqflite.dart'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_constants.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppDbContextService</span> </span>{
+  <span class="hljs-built_in">String</span> _databasesPath;
+  Database _db;
+
+  AppDbContextService() {}
+
+  <span class="hljs-comment">//#region Helpers.</span>
+  <span class="hljs-comment">//#end-region.</span>
+
+  Future&lt;<span class="hljs-keyword">void</span>&gt; dropDb() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">try</span> {
+      _databasesPath = <span class="hljs-keyword">await</span> getDatabasesPath();
+      _databasesPath = join(_databasesPath, AppConstants.databaseName);
+      <span class="hljs-keyword">if</span> (<span class="hljs-keyword">await</span> databaseExists(_databasesPath)) {
+        <span class="hljs-keyword">await</span> deleteDatabase(_databasesPath);
+        debugPrint(<span class="hljs-string">'Drop existing DB successfully'</span>);
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'Exception in AppDbContextService.dropDb(). e is: <span class="hljs-subst">$e</span>'</span>);
+    }
+  }
+
+  Future&lt;<span class="hljs-keyword">void</span>&gt; initDb() <span class="hljs-keyword">async</span> {
+    _databasesPath = <span class="hljs-keyword">await</span> getDatabasesPath();
+    _databasesPath = join(_databasesPath, AppConstants.databaseName);
+
+    <span class="hljs-comment">// Check if the database exists.</span>
+    <span class="hljs-built_in">bool</span> exists = <span class="hljs-keyword">await</span> databaseExists(_databasesPath);
+
+    <span class="hljs-keyword">if</span> (!exists) {
+      <span class="hljs-comment">// Should happen only the first time when you launch your app.</span>
+      debugPrint(<span class="hljs-string">"Database not exist. Creating new copy from assets."</span>);
+
+      <span class="hljs-comment">// Make sure the parent directory exists.</span>
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">await</span> Directory(dirname(_databasesPath)).create(recursive: <span class="hljs-keyword">true</span>);
+
+        <span class="hljs-comment">// Copy from asset.</span>
+        ByteData data = <span class="hljs-keyword">await</span> rootBundle.load(join(<span class="hljs-string">"assets/database"</span>, AppConstants.databaseName));
+        <span class="hljs-built_in">List</span>&lt;<span class="hljs-built_in">int</span>&gt; bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+        
+        <span class="hljs-comment">// Write and flush the bytes written.</span>
+        <span class="hljs-keyword">await</span> File(_databasesPath).writeAsBytes(bytes, flush: <span class="hljs-keyword">true</span>);
+      } <span class="hljs-keyword">catch</span> (e) {
+        debugPrint(<span class="hljs-string">'Exception in AppDbContextService.initDb(). e is: <span class="hljs-subst">$e</span>'</span>);
+      }
+    } <span class="hljs-keyword">else</span> {
+      debugPrint(<span class="hljs-string">"Database already exists."</span>);
+    }
+    <span class="hljs-comment">// open the database.</span>
+    _db = <span class="hljs-keyword">await</span> openDatabase(_databasesPath);
+    debugPrint(<span class="hljs-string">'initDb successfully. _databasesPath is: <span class="hljs-subst">$_databasesPath</span>'</span>);
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> I also include the <code>dropDb</code> method in the above class, just in case you want to use it to refresh the database (call this method at <code>AppInjections</code> class).</p>
+</blockquote>
+<p>Next step is to implement the Dependency Injection (DI) pattern, which is used in <code>.Net Core</code> and <code>Angular</code> as well, to inject the <code>AppDbContext</code> service.</p>
+<h3 id="dependency-injection-di-and-repository-patterns">Dependency Injection (DI) and Repository patterns.</h3>
+<p>In software development, DI is a pattern in which an object receives other objects that it depends on. These other objects are called dependencies and in most cases they are instantiated once only. We call those dependencies as <code>services</code>. This pattern is used in many frameworks such as <code>Angular</code> and <code>.Net Core</code>.</p>
+<p>In <code>.Net Core</code>, we also have another pattern called <code>Repositories</code> which are the classes or components that encapsulate the business logic required to access data sources. And we use DI to inject those repositories for the receiving objects. So we can call those repositories as <code>services</code> as well.</p>
+<p>Alternatively, we can say DI is just the way we inject the objects when we need them, and those objects are created only once and shared for the entire app. And the so-called <code>Repositories</code> is just the way we separate the common codes (business logic codes) between controllers into objects which then can be shared between controllers.</p>
+<p>I use those patterns quite a lot, so I'd like to implement them in <code>Flutter</code> app. I put the <code>Repositories</code> classes inside <code>lib/shared/data/repositories/</code> folder, and the <code>services</code> classes inside <code>lib/shared/services/</code> folder.</p>
+<p>As <code>Flutter</code> doesn't support DI out of the box, we need to add the package <code>get_it</code> to use DI:</p>
+<blockquote>
+<p><code>pubspec.yaml</code></p>
+</blockquote>
+<pre><code class="language-yaml"><div><span class="hljs-comment"># ...</span>
+<span class="hljs-attr">  get_it:</span> <span class="hljs-number">4.0</span><span class="hljs-number">.2</span>
+<span class="hljs-comment"># ...</span>
+</div></code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> There's another package named <code>provider</code> which is also used to handle DI (not purely DI). But after playing around with it, I prefer <code>get_it</code> to <code>provider</code> because I see the syntax of <code>get_it</code> makes it easier to convert <code>Angular</code> app into <code>Flutter</code>.</p>
+</blockquote>
+<p>Then, we need to create <code>AppInjections</code> class to register the services we want to inject in this app:</p>
+<blockquote>
+<p><code>/lib/app_injections.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:get_it/get_it.dart'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/services/app_db_context_service.dart'</span>;
+
+<span class="hljs-keyword">final</span> GetIt getIt = GetIt.instance;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppInjections</span> </span>{
+  <span class="hljs-keyword">static</span> Future&lt;<span class="hljs-keyword">void</span>&gt; setupDI() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">final</span> appDbContextService = AppDbContextService();
+    <span class="hljs-comment">// Register services.</span>
+    getIt.registerSingletonAsync&lt;AppDbContextService&gt;(() <span class="hljs-keyword">async</span> {
+      <span class="hljs-keyword">return</span> appDbContextService;
+    });
+
+    <span class="hljs-comment">// Wait for db initialization.</span>
+    <span class="hljs-keyword">await</span> appDbContextService.initDb();
+    <span class="hljs-comment">// await appDbContextService.dropDb();</span>
+  }
+}
+</div></code></pre>
+<p>Then call the method <code>setupDI</code> in <code>main.dart</code> to setup DI:</p>
+<blockquote>
+<p><code>lib/main.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">void</span> main() <span class="hljs-keyword">async</span> {
+  WidgetsFlutterBinding.ensureInitialized(); <span class="hljs-comment">// Ensure that the Flutter app initializes properly before initializing other configurations.</span>
+  
+  <span class="hljs-keyword">var</span> myApp = MyApp();
+  <span class="hljs-keyword">await</span> AppInjections.setupDI();
+  
+  runApp(myApp);
+}
+</div></code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> <code>Dependency Injection</code> is a very common pattern that is used in many popular frameworks such as <code>Angular</code> and <code>.Net Core</code>. That's why I suggest you should use it in <code>Flutter</code> app.</p>
+</blockquote>
+<p>Now when you run your app (on iOS), you should see the log console like so:</p>
+<pre><code class="language-bash"><div>flutter: Database not exist. Creating new copy from assets.
+flutter: initDb successfully. _databasesPath is: &lt;path_to_database&gt;/Documents/to_do_mobile.db
+</div></code></pre>
+<p>When you run the app, each platform (<code>iOS</code> or <code>Android</code>) will have its own way to keep this db in a particular folder. You can use <code>DB Browser</code> app to open the db (<code>iOS</code> simulator in my case) at <code>&lt;path_to_database&gt;/Documents/to_do_mobile.db</code> and check to see if it's the same as the pre-populated DB in the <code>assets/database/to_do_mobile.db</code>.</p>
+<h3 id="review-2">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Created the pre-populated database named <code>to_do_mobile.db</code>.</li>
+<li>Installed necessary packages to support <code>Sqlite</code> in this app.</li>
+<li>Created <code>AppDbContextService</code> to init the database.</li>
+<li>Implemented Dependency Injections (DI) design pattern to inject the database service into the app.</li>
+</ul>
+<h2 id="implement-observable-pattern-using-rxdart">Implement <code>Observable</code> pattern using <code>RxDart</code>.</h2>
+<p>In this section, I'm going to use <code>Observable</code> pattern which will be used extensively in the rest of this article. The main reason I use this pattern is because it's a cross-platform technique. Once we're familiar with it, we can reuse it in other programming languages such as <code>Javascript</code> (using <code>RxJS</code>), <code>Swift</code> (using <code>RxSwift</code>) or <code>Kotlin</code> (using <code>RxKotlin</code>). I like this pattern which is also used in my <code>Angular</code> apps and would like to use it in this <code>Flutter</code> app, so that I can bring the logic from <code>Angular</code> into <code>Flutter</code>. I won't go in depth into <code>Observable</code> but will just cover some of the high level concepts.</p>
+<p>According to <a href="https://en.wikipedia.org/wiki/Observer_pattern">wikipedia</a>:</p>
+<blockquote>
+<p>The <code>observer</code> pattern is a software design pattern in which an object, called the subject, maintains a list of its dependents, called observers, and notifies them automatically of any state changes, usually by calling one of their methods.</p>
+</blockquote>
+<p>This pattern follows the idea of unidirectional data flow which may seem familiar if you have worked with <code>Flux/ Redux</code> in <code>React</code>. It ensures that the data is coming from one place (single source of truth) in the application and that every component receives the latest version of that data through the data streams.</p>
+<p>Alternatively, in my words, I would say <code>Observable</code> pattern is when all components listen to a particular data source and this data source must come from one place. Once this data source is changed, this change will be reflected to all components.</p>
+<blockquote>
+<p><strong>NOTE:</strong> The implementation of using <code>Observable</code> pattern in this article may seem like a lot of work for such a simple todo app, but when we scale this up to a very large app we'll see <code>Observable</code> can really help manage the data and application state.</p>
+</blockquote>
+<p>Enough talking, let's understand it by implementing it in this app.</p>
+<h3 id="show-list-of-to-do-items-in-console-log">Show list of to-do items in console log.</h3>
+<p>We're going to implement <code>repository</code> pattern which is mentioned in previous section to handle the CRUD operations, and install <code>rxdart</code> package to implement <code>Observable</code> pattern.</p>
+<p>Add the <code>rxdart</code> package:</p>
+<blockquote>
+<p><code>pubspec.yaml</code></p>
+</blockquote>
+<pre><code class="language-yaml"><div><span class="hljs-attr">rxdart:</span> <span class="hljs-number">0.24</span><span class="hljs-number">.0</span>
+</div></code></pre>
+<p>Before showing the list of item on the UI, I'd like to see it in the console log first. We need to make the following changes:</p>
+<ul>
+<li>Create a <code>ToDo</code> model class to capture the to-do item.</li>
+<li>Create <code>ToDoResourceParameters</code> class which will be used to pass the <code>searchQuery</code> value when implementing the search feature later.
+<ul>
+<li><strong>NOTE:</strong> I won't cover the search feature in this article due to the time limit I have. But you can check its implementation in the source code when I update it.</li>
+</ul>
+</li>
+<li>Edit <code>AppDbContext</code> to add the data source of <code>toDos</code>.</li>
+<li>Create <code>ToDoRepoService</code> in <code>lib/shared/data/repositories</code> and create an <code>Observable</code> stream of <code>toDos</code> to subscribe to.</li>
+<li>Register <code>ToDoRepoService</code> in <code>AppInjections</code> class as part of <code>DI</code>.</li>
+<li>Edit <code>Home</code> component to subscribe to the <code>toDos</code> data source stream then call <code>setState</code> to update the UI when data is changed. -&gt; And show to-do list on console.</li>
+</ul>
+<blockquote>
+<p><code>lib/shared/models/to_do_model.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDo</span> </span>{
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> idColumn = <span class="hljs-string">'Id'</span>;
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> createdDateColumn = <span class="hljs-string">'CreatedDate'</span>;
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> descriptionColumn = <span class="hljs-string">'Description'</span>;
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> guidColumn = <span class="hljs-string">'Guid'</span>;
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> isDeletedColumn = <span class="hljs-string">'IsDeleted'</span>;
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> isDoneColumn = <span class="hljs-string">'IsDone'</span>;
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> updatedDateColumn = <span class="hljs-string">'UpdatedDate'</span>;
+
+  <span class="hljs-built_in">int</span> id;
+  <span class="hljs-built_in">String</span> createdDate;
+  <span class="hljs-built_in">String</span> description;
+  <span class="hljs-built_in">String</span> guid;
+  <span class="hljs-built_in">bool</span> isDeleted;
+  <span class="hljs-built_in">bool</span> isDone;
+  <span class="hljs-built_in">String</span> updatedDate;
+
+  ToDo(
+      {<span class="hljs-keyword">this</span>.id,
+      <span class="hljs-keyword">this</span>.createdDate,
+      <span class="hljs-keyword">this</span>.description,
+      <span class="hljs-keyword">this</span>.guid,
+      <span class="hljs-keyword">this</span>.isDeleted,
+      <span class="hljs-keyword">this</span>.isDone,
+      <span class="hljs-keyword">this</span>.updatedDate});
+
+  ToDo.fromJson(<span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt; json) {
+    id = json[idColumn];
+    createdDate = json[createdDateColumn];
+    description = json[descriptionColumn];
+    guid = json[guidColumn];
+    isDeleted = json[isDeletedColumn] == <span class="hljs-number">1</span>;
+    isDone = json[isDoneColumn] == <span class="hljs-number">1</span>;
+    updatedDate = json[updatedDateColumn];
+  }
+
+  <span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt; toJson() {
+    <span class="hljs-keyword">final</span> <span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt; data = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt;();
+    
+    <span class="hljs-keyword">if</span> (id != <span class="hljs-keyword">null</span>) {
+      data[idColumn] = id;
+    }
+    
+    data[createdDateColumn] = createdDate;
+    data[descriptionColumn] = description;
+    data[guidColumn] = guid;
+    data[isDeletedColumn] = isDeleted == <span class="hljs-keyword">true</span> ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>;
+    data[isDoneColumn] = isDone == <span class="hljs-keyword">true</span> ? <span class="hljs-number">1</span> : <span class="hljs-number">0</span>;
+    data[updatedDateColumn] = updatedDate;
+    <span class="hljs-keyword">return</span> data;
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>/lib/shared/parameters/to_do_resource_parameters.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDoResourceParameters</span> </span>{
+  <span class="hljs-keyword">final</span> <span class="hljs-built_in">String</span> searchQuery;
+
+  ToDoResourceParameters({<span class="hljs-keyword">this</span>.searchQuery});
+
+  <span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt; toJson() {
+    <span class="hljs-keyword">final</span> <span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt; data = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Map</span>&lt;<span class="hljs-built_in">String</span>, <span class="hljs-keyword">dynamic</span>&gt;();
+    data[<span class="hljs-string">'searchQuery'</span>] = <span class="hljs-keyword">this</span>.searchQuery;
+    <span class="hljs-keyword">return</span> data;
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/shared/services/app_db_context_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppDbContextService</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-comment">/* DataStore stuffs for ToDos. */</span>
+  <span class="hljs-built_in">List</span>&lt;ToDo&gt; _toDos;
+
+  <span class="hljs-built_in">List</span>&lt;ToDo&gt; <span class="hljs-keyword">get</span> toDos { <span class="hljs-keyword">return</span> _toDos; }
+  <span class="hljs-keyword">set</span> toDos(<span class="hljs-built_in">List</span>&lt;ToDo&gt; value) { _toDos = value ?? <span class="hljs-keyword">null</span>; }
+
+  AppDbContextService() {
+    <span class="hljs-comment">// RxDart stuffs.</span>
+    toDos = [];
+  }
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<blockquote>
+<p><code>/lib/shared/services/repositories/to_do_repo_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/foundation.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:rxdart/rxdart.dart'</span> <span class="hljs-keyword">as</span> rxdart;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_constants.dart'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/models/to_do_model.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/parameters/to_do_resource_parameters.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/services/app_db_context_service.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_injections.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDoRepoService</span> </span>{
+  <span class="hljs-keyword">var</span> _toDosBehaviorSubject = rxdart.BehaviorSubject&lt;<span class="hljs-built_in">List</span>&lt;ToDo&gt;&gt;();
+
+  Stream&lt;<span class="hljs-built_in">List</span>&lt;ToDo&gt;&gt; <span class="hljs-keyword">get</span> toDosObservable =&gt; _toDosBehaviorSubject.asBroadcastStream();
+
+  AppDbContextService _appDbContextService;
+
+  ToDoRepoService() {
+    _appDbContextService = _appDbContextService ?? getIt&lt;AppDbContextService&gt;();
+  }
+
+  Future getListAsync(ToDoResourceParameters toDoResourceParameters) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-comment">// Get data from local Sqlite Db. In the web app (like Angular or React), we get data by using `http`.</span>
+      <span class="hljs-keyword">var</span> readOnlyList = <span class="hljs-keyword">await</span> _appDbContextService.database?.query(
+        AppConstants.tableTodoName, 
+        columns: [ToDo.idColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.isDeletedColumn], 
+        where: <span class="hljs-string">'<span class="hljs-subst">${ToDo.isDeletedColumn}</span> = ?'</span>, whereArgs: [<span class="hljs-number">0</span>],
+      );
+      <span class="hljs-built_in">List</span>&lt;ToDo&gt; list = readOnlyList?.map((item) =&gt; ToDo.fromJson(item))?.toList();
+      _appDbContextService.toDos = <span class="hljs-built_in">List</span>&lt;ToDo&gt;.from(list); <span class="hljs-comment">// Create a new map to modify it in memory.</span>
+      <span class="hljs-comment">// Notify to all listeners.</span>
+      _toDosBehaviorSubject.add(_appDbContextService.toDos);
+      <span class="hljs-keyword">return</span> Future.value();
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'ToDoRepoService getListAsync failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>/lib/app_injections.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppInjections</span> </span>{
+  <span class="hljs-keyword">static</span> Future&lt;<span class="hljs-keyword">void</span>&gt; setupDI() <span class="hljs-keyword">async</span> {
+    <span class="hljs-comment">// Register services.</span>
+    ...
+
+    getIt.registerSingletonAsync&lt;ToDoRepoService&gt;(() <span class="hljs-keyword">async</span> =&gt; ToDoRepoService());
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>/lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'dart:async'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'dart:convert'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/cupertino.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_injections.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/data/repositories/to_do_repo_service.dart'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/models/to_do_model.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> title = <span class="hljs-string">'Home'</span>;
+
+  <span class="hljs-meta">@override</span>
+  _HomeState createState() =&gt; _HomeState();
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  StreamSubscription&lt;<span class="hljs-built_in">List</span>&lt;ToDo&gt;&gt; _toDosObservableSubscriber;
+  <span class="hljs-built_in">List</span>&lt;ToDo&gt; _toDos;
+
+  <span class="hljs-comment">/* DI Services vars. */</span>
+  ToDoRepoService _toDoRepoService;
+
+  _HomeState() {
+    <span class="hljs-comment">/* DI Services. */</span>
+    _toDoRepoService = _toDoRepoService ?? getIt&lt;ToDoRepoService&gt;();
+  }
+
+  <span class="hljs-comment">//#region Lifecycle.</span>
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> initState() {
+    <span class="hljs-keyword">super</span>.initState();
+    _toDosObservableSubscriber = _toDoRepoService.toDosObservable.listen((data) {
+      debugPrint(json.encode(data));
+      _toDos = data;
+      <span class="hljs-keyword">if</span> (_toDos != <span class="hljs-keyword">null</span>) {
+        setState(() {});
+      }
+    });
+
+    <span class="hljs-keyword">this</span>._getListAsync();
+  }
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    ...
+  }
+
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> dispose() {
+    <span class="hljs-keyword">super</span>.dispose();
+    _toDosObservableSubscriber.cancel();
+  }
+  <span class="hljs-comment">//#end-region.</span>
+
+  Future _getListAsync() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">await</span> _toDoRepoService.getListAsync(<span class="hljs-keyword">null</span>);
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'_getListAsync failed.'</span>);
+    } <span class="hljs-keyword">finally</span> {
+    }
+  }
+}
+</div></code></pre>
+<p>Now when you run the app, you should see the result of 3 rows printed in the log console like so:</p>
+<pre><code class="language-bash"><div>flutter: Database already exists.
+flutter: initDb successfully. _databasesPath is: &lt;...&gt;/Documents/to_do_mobile.db
+flutter: [{<span class="hljs-string">"Id"</span>:1,<span class="hljs-string">"CreatedDate"</span>:null,<span class="hljs-string">"Description"</span>:<span class="hljs-string">"Learn Swift"</span>,<span class="hljs-string">"Guid"</span>:<span class="hljs-string">"0a3b06dca81fcb47391996ed1f41e69a"</span>,<span class="hljs-string">"IsDeleted"</span>:0,<span class="hljs-string">"IsDone"</span>:0,<span class="hljs-string">"UpdatedDate"</span>:null},{<span class="hljs-string">"Id"</span>:2,<span class="hljs-string">"CreatedDate"</span>:null,<span class="hljs-string">"Description"</span>:<span class="hljs-string">"Learn Flutter"</span>,<span class="hljs-string">"Guid"</span>:<span class="hljs-string">"edd579c6d28b20951e62fc0316b41520"</span>,<span class="hljs-string">"IsDeleted"</span>:0,<span class="hljs-string">"IsDone"</span>:0,<span class="hljs-string">"UpdatedDate"</span>:null},{<span class="hljs-string">"Id"</span>:3,<span class="hljs-string">"CreatedDate"</span>:null,<span class="hljs-string">"Description"</span>:<span class="hljs-string">"Learn .Net Core"</span>,<span class="hljs-string">"Guid"</span>:<span class="hljs-string">"1616de86895b0075a9b00cc5f6fef06c"</span>,<span class="hljs-string">"IsDeleted"</span>:0,<span class="hljs-string">"IsDone"</span>:0,<span class="hljs-string">"UpdatedDate"</span>:null}]
+</div></code></pre>
+<p>The next step is to show these 3 rows on the UI.</p>
+<h3 id="show-list-on-home-page">Show list on <code>Home</code> page.</h3>
+<p>Before implementing <code>CRUD</code> operations, let's show the list of items on the <code>Home</code> page UI. Edi the <code>Home</code> component as follow:</p>
+<blockquote>
+<p><code>/lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:intl/intl.dart'</span>;
+<span class="hljs-comment">// ...</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(Home.title),
+      ),
+      body: Center(
+        child: ListView(
+          children: _toDos?.map((item) {
+            <span class="hljs-keyword">return</span> Dismissible(
+              <span class="hljs-comment">// Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.</span>
+              key: UniqueKey(), <span class="hljs-comment">// Or you can use Key(item?.guid.toString()),</span>
+              child: ListTile(
+                leading: IconButton(
+                  icon: Icon((item?.isDone == <span class="hljs-keyword">true</span> ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
+                  onPressed: () {},
+                ),
+                title: Text(                  
+                  item?.description ?? <span class="hljs-string">''</span>,
+                  maxLines: <span class="hljs-number">2</span>,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle1,
+                ),
+                subtitle: Text(
+                  (item.updatedDate ?? <span class="hljs-string">''</span>) == <span class="hljs-string">''</span> ? <span class="hljs-string">''</span> : <span class="hljs-string">'<span class="hljs-subst">${DateFormat(<span class="hljs-string">'EEE, y/M/d'</span>).format(DateTime.parse(item.updatedDate))}</span>'</span>,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.subtitle2,
+                ),
+                trailing: Icon(Icons.keyboard_arrow_right),
+                onTap: () {},
+              ),
+            );
+          })?.toList(),
+        )
+      ),
+    );
+  }
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<p>Then run the app and you should see the following UI:</p>
+<p><img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/home-list.png" alt="alt text" title="Title"></p>
+<h3 id="code-improvements-use-listviewbuilder-for-a-long-list">Code improvements: Use <code>ListView.builder</code> for a long list.</h3>
+<p>When working with infinite lists or very long lists, it’s usually advisable to use a <code>ListView.builder</code> in order to improve the app's performance. -&gt; Why? -&gt; Because the <code>ListView</code> constructor builds the whole list at once. But the <code>ListView.builder</code> creates a lazy list that when the users scroll down the list, Flutter builds widgets on-demand. Let's modify the <code>build</code> method like so:</p>
+<blockquote>
+<p><code>/lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-comment">// ...</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+
+  _HomeState() {
+    <span class="hljs-comment">/* DI Services. */</span>
+    _toDoRepoService = _toDoRepoService ?? getIt&lt;ToDoRepoService&gt;();
+  }
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(Home.title),
+      ),
+      body: Center(
+        child: ListView.builder(
+          itemCount: _toDos == <span class="hljs-keyword">null</span> ? <span class="hljs-number">0</span> : _toDos.length,
+          itemBuilder: (BuildContext context, <span class="hljs-built_in">int</span> index) {
+            ToDo item = _toDos[index];
+            <span class="hljs-keyword">return</span> Dismissible(
+              ...
+            );
+          },
+        ),
+      ),
+    );
+  }
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<h3 id="review-3">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Added <code>rxdart</code> package to implement <code>Observable</code> pattern.</li>
+<li>Created the <code>ToDo</code> model to map the result from Sqlite db.</li>
+<li>Created <code>ToDoRepoService</code> and inject it into the app.</li>
+<li>Logging the result in the log console by listening to the data changes.</li>
+<li>Showed the list of items on <code>Home</code> page UI.</li>
+</ul>
+<h2 id="implement-create-operation">Implement <code>Create</code> operation.</h2>
+<p>In previous sections, I showed you how to implement routing between tabs which I call it as routing outside the <code>AppTabBar</code>. In this section, we're going to implementing routing inside <code>AppTabBar</code>. It means each tab will have its own navigation. For example, at <code>Home</code> page, there's a an <code>Add</code> button which navigates to the another page to add new item.</p>
+<p>Let's implement the <code>Create</code> operation by making the following changes:</p>
+<ul>
+<li>Edit the <code>build</code> method of <code>Home</code> component to show the <code>Add</code> button at the bottom. Also, add method <code>_navigateTo</code> which is called in <code>onPressed</code> event when the <code>Add</code> button pressed.</li>
+<li>Create a new component named <code>AddToDo</code>.</li>
+<li>Add new method named <code>generateAppTabBarRoute</code> inside <code>AppRouting</code> class to implement routing inside the <code>AppTabBar</code>.</li>
+<li>Then in <code>AppTabBar</code>, edit method <code>_buildCupertinoTabScaffold</code> to generate routes inside the <code>AppTabBar</code> for all tabs.</li>
+<li>In <code>ToDoRepoService</code>, add methods <code>addAsyncGet</code> and <code>addAsyncPost</code> to save item.</li>
+<li>Edit <code>AddToDo</code> and inject <code>ToDoRepoService</code> to save item on pressing <code>Done</code> button.</li>
+</ul>
+<blockquote>
+<p><code>/lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        <span class="hljs-comment">// ...</span>
+      ),
+      body: Center(
+        child: ListView.builder(
+          <span class="hljs-comment">// ...</span>
+        ),
+      ),
+      floatingActionButton: Padding(
+        padding: <span class="hljs-keyword">const</span> EdgeInsets.only(bottom: <span class="hljs-number">50.0</span>), <span class="hljs-comment">// Use padding because the bottom bar covers it.</span>
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {},
+        ),
+      ),
+    );
+  }
+}
+</div></code></pre>
+<p>Then run the app and you should see the following UI:</p>
+<p><img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/home-list-add-button.png" alt="alt text" title="Title"></p>
+<p>Next, let's create a new component named <code>AddToDo</code> with basic UI, so that when users click the <code>Add</code> button, it'll get to this page. Also, we need to add a new constant value path for this component in <code>AppConstants</code>:</p>
+<blockquote>
+<p><code>lib/components/add_to_do/add_to_do.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AddToDo</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> title = <span class="hljs-string">'AddToDo'</span>;
+
+  <span class="hljs-meta">@override</span>
+  _AddToDoState createState() =&gt; _AddToDoState();
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_AddToDoState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">AddToDo</span>&gt; </span>{
+  <span class="hljs-keyword">final</span> _formKey = GlobalKey&lt;FormState&gt;();
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(AddToDo.title),
+        actions: &lt;Widget&gt;[
+          FloatingActionButton(
+            child: Text(<span class="hljs-string">'Done'</span>),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.yellowAccent,
+            elevation: <span class="hljs-number">0</span>, <span class="hljs-comment">// This is to hide the shadow.</span>
+            onPressed: () {
+              FocusScope.of(context).unfocus();
+            },
+          ),
+        ],
+      ),
+      body: GestureDetector( <span class="hljs-comment">// Catch event when tapping outside.</span>
+        onTap: () {
+          FocusScope.of(context).unfocus(); <span class="hljs-comment">// Hide/ dismiss keyboard.</span>
+        },
+        child: SafeArea(
+          minimum: <span class="hljs-keyword">const</span> EdgeInsets.all(<span class="hljs-number">8</span>),
+          child: Scrollbar(
+            child: ListView(
+              children: &lt;Widget&gt;[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: <span class="hljs-string">"Add to-do"</span>,
+                      hintText: <span class="hljs-string">"Add new to-do."</span>,
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: <span class="hljs-keyword">null</span>, <span class="hljs-comment">// To use auto wrap.</span>
+                    <span class="hljs-comment">// autofocus: true,</span>
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_constants.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppConstants</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> addToDoPath = <span class="hljs-string">'/add-to-do'</span>;
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_routing.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppRouting</span> </span>{
+  <span class="hljs-comment"><span class="markdown">/// Routing outside </span>the<span class="markdown"> <span class="hljs-code">`AppTabBar`</span>.</span></span>
+  <span class="hljs-keyword">static</span> Route&lt;<span class="hljs-keyword">dynamic</span>&gt; generateAppRoute(RouteSettings settings) {
+    ...
+  }
+
+  <span class="hljs-comment"><span class="markdown">/// Routing inside </span>the<span class="markdown"> <span class="hljs-code">`AppTabBar`</span>.</span></span>
+  <span class="hljs-keyword">static</span> Route&lt;<span class="hljs-keyword">dynamic</span>&gt; generateAppTabBarRoute(RouteSettings settings) {
+    <span class="hljs-keyword">switch</span> (settings.name) {
+      <span class="hljs-keyword">case</span> AppConstants.addToDoPath:
+        <span class="hljs-keyword">return</span> CupertinoPageRoute(
+          builder: (_) =&gt; AddToDo(),
+        );
+      <span class="hljs-keyword">default</span>:
+        <span class="hljs-keyword">assert</span>(<span class="hljs-keyword">false</span>, <span class="hljs-string">'No route defined for <span class="hljs-subst">${settings.name}</span>'</span>);
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">null</span>;
+    }
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/components/app_tab_bar/app_tab_bar.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppTabBar</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_AppTabBarState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">AppTabBar</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-comment">//#region Helpers.</span>
+  CupertinoTabScaffold _buildCupertinoTabScaffold() {
+    <span class="hljs-keyword">return</span> CupertinoTabScaffold(
+      tabBar: CupertinoTabBar(
+        <span class="hljs-comment">// ...</span>
+      ),
+      tabBuilder: (context, index) {
+        <span class="hljs-keyword">final</span> tabItemLabel = _TabItemLabelEnum.values[index];
+        <span class="hljs-keyword">return</span> CupertinoTabView(
+          builder: (context) {
+            <span class="hljs-comment">// ...</span>
+          },
+          <span class="hljs-comment">// Generate routes inside `AppTabBar` for all tabs.</span>
+          onGenerateRoute: AppRouting.generateAppTabBarRoute,
+        );
+      },
+    );
+  }
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-comment">//#end-region.</span>
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        <span class="hljs-comment">// ...</span>
+      ),
+      body: Center(
+        <span class="hljs-comment">// ...</span>
+      ),
+      floatingActionButton: Padding(
+        <span class="hljs-comment">// ...</span>
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            _navigateTo(<span class="hljs-keyword">null</span>, AppConstants.addToDoPath);
+          },
+        ),
+      ),
+    );
+  }
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">void</span> _navigateTo(ToDo toDo, <span class="hljs-built_in">String</span> componentPath) {
+    <span class="hljs-keyword">var</span> queryParamsObj = ToDoParameters(id: toDo?.id);
+    Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
+  }
+  <span class="hljs-comment">//#end-region.</span>
+}
+</div></code></pre>
+<p>Run the app and press the <code>Add</code> button to get to the <code>AddToDo</code> component. After pressing <code>Add</code> button, you should see sth like so:</p>
+<p><img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/home_add-to-do.png" alt="alt text" title="Title"></p>
+<p>Next step is to save the new to-do item when tapping <code>Done</code> button.</p>
+<h3 id="save-new-item-to-database">Save new item to database.</h3>
+<p>In <code>pubspec.yaml</code>, add the package <code>uuid</code> to generate guid:</p>
+<blockquote>
+<p><code>pubspec.yaml</code></p>
+</blockquote>
+<pre><code class="language-yaml"><div><span class="hljs-string">//</span> <span class="hljs-string">...</span>
+<span class="hljs-attr">dependencies:</span>
+<span class="hljs-attr">  flutter:</span>
+<span class="hljs-attr">    sdk:</span> <span class="hljs-string">flutter</span>
+
+  <span class="hljs-string">//</span> <span class="hljs-string">...</span>
+<span class="hljs-attr">  uuid:</span> <span class="hljs-number">2.0</span><span class="hljs-number">.4</span> <span class="hljs-comment"># Generate Guid.</span>
+<span class="hljs-string">//</span> <span class="hljs-string">...</span>
+</div></code></pre>
+<p>Add methods <code>addAsyncGet</code> and <code>addAsyncPost</code>:</p>
+<blockquote>
+<p><code>lib/shared/repositories/to_do_repo_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDoRepoService</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  Future&lt;ToDo&gt; addAsyncGet() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-comment">// Get the empty to-do model. In the web app, we get it from the server API.</span>
+      <span class="hljs-keyword">return</span> Future.value(<span class="hljs-keyword">new</span> ToDo(createdDate: <span class="hljs-built_in">DateTime</span>.now().toUtc().toString(), guid: Uuid().v1(), updatedDate: <span class="hljs-built_in">DateTime</span>.now().toUtc().toString()));
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'ToDoRepoService addAsyncGet failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+
+  Future&lt;ToDo&gt; addAsyncPost(ToDo paramObj) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+    <span class="hljs-keyword">var</span> db = _appDbContextService.database;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-built_in">List</span>&lt;<span class="hljs-keyword">dynamic</span>&gt; results;
+      paramObj.updatedDate = <span class="hljs-built_in">DateTime</span>.now().toUtc().toString(); <span class="hljs-comment">// Need to be the current time before saving to Sqlite db.</span>
+
+      <span class="hljs-keyword">await</span> db?.transaction((txn) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">var</span> batch = txn.batch();
+        batch.insert(
+          AppConstants.tableTodoName,
+          paramObj.toJson(),
+        );
+        results = <span class="hljs-keyword">await</span> batch.commit();
+        <span class="hljs-comment">// debugPrint('results is: ${json.encode(results)}');</span>
+      });
+      <span class="hljs-keyword">if</span> (results != <span class="hljs-keyword">null</span>) {
+        paramObj.id = results.first;
+        <span class="hljs-keyword">var</span> list = <span class="hljs-built_in">List</span>&lt;ToDo&gt;.from(_appDbContextService.toDos);
+        list.insert(<span class="hljs-number">0</span>, paramObj);
+        _appDbContextService.toDos = list;
+        _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        <span class="hljs-keyword">return</span> Future.value(paramObj);
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      <span class="hljs-built_in">print</span>(<span class="hljs-string">'ToDoRepoService addAsyncPost failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+}
+</div></code></pre>
+<p>In <code>AddToDo</code>, inject <code>ToDoRepoService</code> and add methods <code>_addAsyncGet</code>, <code>_addAsyncPost</code> and <code>_validateAndSaveForm</code>, then call <code>_addAsyncPost</code> on adding new item. We also need to validate the description's value and capture it into the <code>ToDo</code> model in the <code>build</code> method:</p>
+<blockquote>
+<p><code>lib/components/add_to_do/add_to_do.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AddToDo</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_AddToDoState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">AddToDo</span>&gt; </span>{
+  <span class="hljs-keyword">final</span> _formKey = GlobalKey&lt;FormState&gt;();
+  ToDo _newToDo;
+
+  <span class="hljs-comment">/* DI Services vars. */</span>
+  ToDoRepoService _toDoRepoService;
+
+  _AddToDoState() {
+    <span class="hljs-comment">/* DI Services. */</span>
+    _toDoRepoService = _toDoRepoService ?? getIt&lt;ToDoRepoService&gt;();
+  }
+
+  <span class="hljs-comment">//#region Lifecycle.</span>
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> initState() {
+    <span class="hljs-keyword">super</span>.initState();    
+
+    _addAsyncGet();
+  }
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        <span class="hljs-comment">// ...</span>
+      ),
+      body: GestureDetector(
+        onTap: () {
+          <span class="hljs-comment">// ...</span>
+        },
+        child: SafeArea(
+          minimum: <span class="hljs-keyword">const</span> EdgeInsets.all(<span class="hljs-number">8</span>),
+          child: Scrollbar(
+            child: ListView(
+              children: &lt;Widget&gt;[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    <span class="hljs-comment">// ...</span>
+                    validator: (value) =&gt; value.isNotEmpty ? <span class="hljs-keyword">null</span> : <span class="hljs-string">'Description can\'t be empty'</span>,
+                    onSaved: (value) =&gt; _newToDo.description = value?.trim(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  <span class="hljs-comment">//#region Helpers.</span>
+  Future _addAsyncGet() <span class="hljs-keyword">async</span> {
+    <span class="hljs-built_in">bool</span> isOk = <span class="hljs-keyword">false</span>; ToDo response;
+    
+    <span class="hljs-keyword">try</span> {
+      ToDo res = <span class="hljs-keyword">await</span> _toDoRepoService.addAsyncGet();
+      <span class="hljs-keyword">if</span> (res != <span class="hljs-keyword">null</span>) {
+        response = res;
+        isOk = <span class="hljs-keyword">true</span>;
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'_addAsyncGet failed.'</span>);
+    } <span class="hljs-keyword">finally</span> {
+      <span class="hljs-keyword">if</span> (isOk) {
+        setState(() {
+          _newToDo = response;
+        });
+      }
+    }
+  }
+
+  Future _addAsyncPost() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">if</span> (!_validateAndSaveForm()) { <span class="hljs-keyword">return</span>; }
+
+    <span class="hljs-built_in">bool</span> isOk = <span class="hljs-keyword">false</span>;
+    <span class="hljs-keyword">try</span> {
+      ToDo copiedNewToDo = ToDo.fromJson(_newToDo.toJson());
+
+      ToDo res = <span class="hljs-keyword">await</span> _toDoRepoService.addAsyncPost(copiedNewToDo);
+      isOk = <span class="hljs-keyword">true</span>;
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'_addAsyncPost failed'</span>);
+    } <span class="hljs-keyword">finally</span> {
+      <span class="hljs-keyword">if</span> (isOk) {
+        Navigator.pop(context); <span class="hljs-comment">// Get back to previous page.</span>
+      }
+    }
+  }
+
+  <span class="hljs-built_in">bool</span> _validateAndSaveForm() {
+    <span class="hljs-keyword">final</span> form = _formKey.currentState;
+    <span class="hljs-keyword">if</span> (form.validate()) {
+      form.save();
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+  }
+  <span class="hljs-comment">//#end-region.</span>
+}
+</div></code></pre>
+<p>Run the app and try to add new item -&gt; Then press <code>Done</code> button, it'll get back to the <code>Home</code> page and you should see the new item is added.</p>
+<h3 id="code-improvements-2">Code improvements.</h3>
+<p>At <code>Home</code> page, I want to see the latest item at the beginning. In <code>ToDoRepoService</code> class, let's modify method <code>getListAsync</code> to show the items based on the column <code>UpdatedDate</code> in descending order:</p>
+<blockquote>
+<p><code>lib/shared/repositories/to_do_repo_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDoRepoService</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  Future getListAsync(ToDoResourceParameters toDoResourceParameters) <span class="hljs-keyword">async</span> {
+    <span class="hljs-comment">// ...</span>
+    <span class="hljs-keyword">var</span> readOnlyList = <span class="hljs-keyword">await</span> _appDbContextService.database?.query(
+      AppConstants.tableTodoName, 
+      columns: [ToDo.idColumn, ToDo.createdDateColumn, ToDo.descriptionColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+      where: <span class="hljs-string">'<span class="hljs-subst">${ToDo.isDeletedColumn}</span> = ?'</span>, whereArgs: [<span class="hljs-number">0</span>],
+      orderBy: <span class="hljs-string">'<span class="hljs-subst">${ToDo.updatedDateColumn}</span> DESC'</span>
+    );
+    <span class="hljs-comment">// ...</span>
+  }
+}
+</div></code></pre>
+<h3 id="review-4">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Showed the list on the <code>Home</code> component ordered by <code>UpdatedDate</code> column in the descending order.</li>
+<li>Added new component <code>AddToDo</code> to implement the <code>Create</code> operation.</li>
+</ul>
+<p>Next section is to implement <code>Read</code>, <code>Update</code> and <code>Delete</code> operations.</p>
+<h2 id="implement-read-update-and-delete-operations">Implement <code>Read</code>, <code>Update</code> and <code>Delete</code> operations.</h2>
+<p>For security reason, the Read, Update and Delete operations will be processed based on the <code>guid</code>, not <code>id</code> column. Let's make the following changes:</p>
+<ul>
+<li>In <code>ToDoRepoService</code>, add methods <code>updateGet</code>, <code>updatePost</code>, <code>deletePost</code> and <code>toggleIsDone</code>.</li>
+<li>Then create new component named <code>EditToDo</code> which is quite similar to <code>AddToDo</code> component.</li>
+<li>In <code>AppConstants</code>, add new path for <code>EditToDo</code> component.</li>
+<li>In <code>AppRouting</code>, add a new route to get to <code>EditToDo</code> component.</li>
+<li>In <code>Home</code>, add event to get to <code>EditToDo</code> when users select an item to update. Then add new method named <code>_toggleIsDoneRadioBtn</code> to allow users toggle the item as completed/ uncompleted. After that, implement <code>swipe to delete</code> to delete item.</li>
+</ul>
+<h3 id="implement-read-and-update-operations">Implement <code>Read</code> and <code>Update</code> operations.</h3>
+<p>First thing first, edit <code>ToDoRepoService</code> to add necessary methods:</p>
+<blockquote>
+<p><code>lib/shared/repositories/to_do_repo_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDoRepoService</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  Future&lt;ToDo&gt; updateGet(ToDo paramObj) <span class="hljs-keyword">async</span> {
+    ToDo updatingItem; <span class="hljs-keyword">dynamic</span> error;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-comment">// Get the to-do model by guid. In the web app, we get it from the server API.</span>
+      <span class="hljs-keyword">var</span> readOnlyList = <span class="hljs-keyword">await</span> _appDbContextService.database?.query(
+        AppConstants.tableTodoName, 
+        columns: [ToDo.descriptionColumn, ToDo.createdDateColumn, ToDo.guidColumn, ToDo.isDoneColumn, ToDo.updatedDateColumn, ToDo.isDeletedColumn], 
+        where: <span class="hljs-string">'<span class="hljs-subst">${ToDo.guidColumn}</span> = ?'</span>, whereArgs: [paramObj?.guid],
+      );
+      updatingItem = ToDo.fromJson(readOnlyList?.first);
+
+      <span class="hljs-keyword">if</span> (updatingItem != <span class="hljs-keyword">null</span>) {
+        <span class="hljs-keyword">return</span> Future.value(updatingItem);
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'ToDoRepoService updateGet failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+
+  Future updatePost(ToDo paramObj) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+    <span class="hljs-keyword">var</span> db = _appDbContextService.database;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-built_in">List</span>&lt;<span class="hljs-keyword">dynamic</span>&gt; results;
+      paramObj.updatedDate = <span class="hljs-built_in">DateTime</span>.now().toUtc().toString();
+
+      <span class="hljs-keyword">await</span> db?.transaction((txn) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">var</span> batch = txn.batch();
+        batch.update(
+          AppConstants.tableTodoName,
+          paramObj.toJson(),
+          where: <span class="hljs-string">'<span class="hljs-subst">${ToDo.guidColumn}</span> = ?'</span>, whereArgs: [paramObj?.guid],
+        );
+        results = <span class="hljs-keyword">await</span> batch.commit();
+      });
+      <span class="hljs-keyword">if</span> (results.first &gt; <span class="hljs-number">0</span>) {
+        ToDo updatedItem = <span class="hljs-keyword">await</span> updateGet(paramObj);
+        <span class="hljs-keyword">var</span> updatingItemIndex = _appDbContextService.toDos.indexWhere((item) =&gt; item.guid == updatedItem.guid);
+        <span class="hljs-keyword">if</span> (updatingItemIndex != <span class="hljs-number">-1</span>) {
+          _appDbContextService.toDos[updatingItemIndex] = updatedItem;
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        <span class="hljs-keyword">return</span> Future.value();
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'ToDoRepoService updatePost failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+
+  Future toggleIsDone(ToDo paramObj) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+    <span class="hljs-keyword">var</span> db = _appDbContextService.database;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-keyword">var</span> paramObjJson = paramObj.toJson();
+      <span class="hljs-built_in">List</span>&lt;<span class="hljs-keyword">dynamic</span>&gt; results;
+      <span class="hljs-keyword">await</span> db?.transaction((txn) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">var</span> batch = txn.batch();
+        batch.update(
+          AppConstants.tableTodoName,
+          <span class="hljs-comment">// We just need to update `IsDone` column.</span>
+          {ToDo.isDoneColumn: paramObjJson[ToDo.isDoneColumn]},
+          where: <span class="hljs-string">'<span class="hljs-subst">${ToDo.guidColumn}</span> = ?'</span>, whereArgs: [paramObj?.guid],
+        );
+        results = <span class="hljs-keyword">await</span> batch.commit();
+        <span class="hljs-comment">// debugPrint('updatePost results is: ${json.encode(results)}');</span>
+      });
+      <span class="hljs-keyword">if</span> (results.first &gt; <span class="hljs-number">0</span>) {
+        <span class="hljs-keyword">var</span> updatingItemIndex = _appDbContextService.toDos.indexWhere((item) =&gt; item.guid == paramObj.guid);
+        <span class="hljs-keyword">if</span> (updatingItemIndex != <span class="hljs-number">-1</span>) {
+          _appDbContextService.toDos[updatingItemIndex] = ToDo.fromJson(paramObjJson);
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        <span class="hljs-keyword">return</span> Future.value();
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'ToDoRepoService updatePost failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/components/edit_to_do/edit_to_do.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'dart:convert'</span>;
+
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/material.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_injections.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/data/repositories/to_do_repo_service.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/models/to_do_model.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/shared/parameters/to_do_parameters.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">EditToDo</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> title = <span class="hljs-string">'EditToDo'</span>;
+  <span class="hljs-keyword">final</span> ToDoParameters toDoParameters;
+
+  EditToDo({<span class="hljs-meta">@required</span> <span class="hljs-keyword">this</span>.toDoParameters}); <span class="hljs-comment">// Capture the params sent from `Home` component.</span>
+
+  <span class="hljs-meta">@override</span>
+  _EditToDoState createState() =&gt; _EditToDoState();
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_EditToDoState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">EditToDo</span>&gt; </span>{
+  <span class="hljs-keyword">final</span> _formKey = GlobalKey&lt;FormState&gt;();
+  ToDo _updatingToDo;
+
+  <span class="hljs-comment">/* DI Services vars. */</span>
+  ToDoRepoService _toDoRepoService;
+
+  _EditToDoState() {
+    <span class="hljs-comment">/* DI Services. */</span>
+    _toDoRepoService = _toDoRepoService ?? getIt&lt;ToDoRepoService&gt;();
+  }
+
+  <span class="hljs-comment">//#region Lifecycle.</span>
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> initState() {
+    <span class="hljs-keyword">super</span>.initState();    
+
+    _updateGet(<span class="hljs-keyword">new</span> ToDo(guid: widget.toDoParameters.guid));
+  }
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(EditToDo.title),
+        actions: &lt;Widget&gt;[
+          FloatingActionButton(
+            child: Text(<span class="hljs-string">'Save'</span>),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.yellowAccent,
+            elevation: <span class="hljs-number">0</span>,
+            onPressed: () <span class="hljs-keyword">async</span> {
+              FocusScope.of(context).unfocus();
+              _updatePost();
+            },
+          ),
+        ],
+      ),
+      body: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SafeArea(
+          minimum: <span class="hljs-keyword">const</span> EdgeInsets.all(<span class="hljs-number">8</span>),
+          child: Scrollbar(
+            child: ListView(
+              children: &lt;Widget&gt;[
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: TextEditingController(text: _updatingToDo?.description ?? <span class="hljs-string">''</span>,),
+                    decoration: InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: <span class="hljs-string">"Edit to-do"</span>,
+                      hintText: <span class="hljs-string">"Edit to-do."</span>,
+                    ),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: <span class="hljs-keyword">null</span>,
+                    <span class="hljs-comment">// autofocus: true,</span>
+                    validator: (value) =&gt; value.isNotEmpty ? <span class="hljs-keyword">null</span> : <span class="hljs-string">'Description can\'t be empty'</span>,
+                    onSaved: (value) =&gt; _updatingToDo.description = value?.trim(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> dispose() {
+    <span class="hljs-keyword">super</span>.dispose();
+  }
+  <span class="hljs-comment">//#end-region.</span>
+
+  <span class="hljs-comment">//#region Helpers.</span>
+  Future _updateGet(ToDo updatingToDo) <span class="hljs-keyword">async</span> {
+    <span class="hljs-built_in">bool</span> isOk = <span class="hljs-keyword">false</span>; ToDo response;
+    
+    <span class="hljs-keyword">try</span> {
+      ToDo res = <span class="hljs-keyword">await</span> _toDoRepoService.updateGet(updatingToDo);
+      <span class="hljs-keyword">if</span> (res != <span class="hljs-keyword">null</span>) {
+        response = res;
+        isOk = <span class="hljs-keyword">true</span>;
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'_updateGet failed.'</span>);
+    } <span class="hljs-keyword">finally</span> {
+      <span class="hljs-built_in">print</span>(<span class="hljs-string">'finally called.'</span>);
+
+      <span class="hljs-keyword">if</span> (isOk) {
+        setState(() {
+          _updatingToDo = response;
+        });
+      }
+    }
+  }
+
+  Future _updatePost() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">if</span> (!_validateAndSaveForm()) { <span class="hljs-keyword">return</span>; }
+
+    <span class="hljs-built_in">bool</span> isOk = <span class="hljs-keyword">false</span>;
+    <span class="hljs-keyword">try</span> {
+      ToDo copiedUpdatingToDo = ToDo.fromJson(_updatingToDo.toJson());
+
+      <span class="hljs-keyword">await</span> _toDoRepoService.updatePost(copiedUpdatingToDo);
+      isOk = <span class="hljs-keyword">true</span>;
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'_updatePost failed'</span>);
+    } <span class="hljs-keyword">finally</span> {
+      debugPrint(<span class="hljs-string">'finally called.'</span>);
+      
+      <span class="hljs-keyword">if</span> (isOk) {
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  <span class="hljs-built_in">bool</span> _validateAndSaveForm() {
+    <span class="hljs-keyword">final</span> form = _formKey.currentState;
+    <span class="hljs-keyword">if</span> (form.validate()) {
+      form.save();
+      <span class="hljs-keyword">return</span> <span class="hljs-keyword">true</span>;
+    }
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">false</span>;
+  }
+  <span class="hljs-comment">//#end-region.</span>
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_constants.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppConstants</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">static</span> <span class="hljs-keyword">const</span> <span class="hljs-built_in">String</span> editToDoPath = <span class="hljs-string">'/edit-to-do'</span>;
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_routing.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppRouting</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">static</span> Route&lt;<span class="hljs-keyword">dynamic</span>&gt; generateAppTabBarRoute(RouteSettings settings) {
+    <span class="hljs-keyword">switch</span> (settings.name) {
+      <span class="hljs-comment">// ...</span>
+      <span class="hljs-keyword">case</span> AppConstants.editToDoPath:
+        <span class="hljs-keyword">return</span> CupertinoPageRoute(
+          builder: (_) =&gt; EditToDo(toDoParameters: settings.arguments),
+        );
+      <span class="hljs-comment">// ...</span>
+    }
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        <span class="hljs-comment">// ...</span>
+      ),
+      body: Center(
+        child: ListView.builder(
+          <span class="hljs-comment">// ...</span>
+          itemBuilder: (BuildContext context, <span class="hljs-built_in">int</span> index) {
+            ToDo item = _toDos[index];
+            <span class="hljs-keyword">return</span> Dismissible(
+              <span class="hljs-comment">// ...</span>
+              child: ListTile(
+                <span class="hljs-comment">// ...</span>
+                onTap: () {
+                  _navigateTo(item, AppConstants.editToDoPath);
+                },
+              ),
+            );
+          },
+        ),
+      ),
+      <span class="hljs-comment">// ...</span>
+    );
+  }
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">void</span> _navigateTo(ToDo toDo, <span class="hljs-built_in">String</span> componentPath) {
+    <span class="hljs-keyword">var</span> queryParamsObj = ToDoParameters(id: toDo?.id, guid: toDo?.guid);
+    Navigator.pushNamed(context, componentPath, arguments: queryParamsObj);
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><strong>NOTE:</strong> I use the built-in <code>Dismissible</code> widget to allows users to delete item by swiping left or right. You can consider to use the 3rd-party package <code>flutter_slidable</code> which is similar to <code>Dismissible</code> widget but with more options.</p>
+</blockquote>
+<p>The other <code>Update</code> operation is to allow users toggle the radio button at <code>Home</code> page as completed/ uncompleted. To do so, we need to add new method named <code>_toggleIsDoneRadioBtn</code> in <code>Home</code> component:</p>
+<blockquote>
+<p><code>lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        <span class="hljs-comment">// ...</span>
+      ),
+      body: Center(
+        child: ListView.builder(
+          <span class="hljs-comment">// ...</span>
+          itemBuilder: (BuildContext context, <span class="hljs-built_in">int</span> index) {
+            ToDo item = _toDos[index];
+            <span class="hljs-keyword">return</span> Dismissible(
+              <span class="hljs-comment">// ...</span>
+              child: ListTile(
+                leading: IconButton(
+                  icon: Icon((item?.isDone == <span class="hljs-keyword">true</span> ? Icons.radio_button_checked : Icons.radio_button_unchecked), color: Colors.blueAccent,),
+                  onPressed: () {
+                    item.isDone = !item.isDone;
+                    _toggleIsDoneRadioBtn(item);
+                  },
+                ),
+                <span class="hljs-comment">// ...</span>
+              ),
+            );
+          },
+        ),
+      ),
+      <span class="hljs-comment">// ...</span>
+    );
+  }
+  <span class="hljs-comment">// ...</span>
+  Future _toggleIsDoneRadioBtn(ToDo updatingToDo) <span class="hljs-keyword">async</span> {
+    <span class="hljs-built_in">bool</span> isOk = <span class="hljs-keyword">false</span>;
+    <span class="hljs-keyword">try</span> {
+      ToDo copiedUpdatingToDo = ToDo.fromJson(updatingToDo.toJson());
+
+      <span class="hljs-keyword">await</span> _toDoRepoService.toggleIsDone(copiedUpdatingToDo);
+      isOk = <span class="hljs-keyword">true</span>;
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'_toggleCompleted failed'</span>);
+    } <span class="hljs-keyword">finally</span> {
+      debugPrint(<span class="hljs-string">'finally called.'</span>);
+      
+      <span class="hljs-keyword">if</span> (isOk) {}
+    }
+  }
+}
+</div></code></pre>
+<p>Run the app and try to select an item to get to <code>EditToDo</code> page. -&gt; Update the description and press <code>Save</code> button. -&gt; You should see the selected item updated with new content. -&gt; Then, at <code>Home</code> page, try to toggle the radio button to see item marked as completed/ uncompleted.</p>
+<h3 id="implement-delete-operation">Implement <code>Delete</code> operation.</h3>
+<p>Users can delete the item by swiping the item to the left/ right. In <code>ToDoRepoService</code> class, add new method named <code>deletePost</code>:</p>
+<blockquote>
+<p><code>lib/shared/data/repositories/to_do_repo_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ToDoRepoService</span> </span>{
+  <span class="hljs-comment">// ...</span>
+  Future deletePost(ToDo paramObj) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+    <span class="hljs-keyword">var</span> db = _appDbContextService.database;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-built_in">List</span>&lt;<span class="hljs-keyword">dynamic</span>&gt; results;
+      <span class="hljs-keyword">await</span> db?.transaction((txn) <span class="hljs-keyword">async</span> {
+        <span class="hljs-keyword">var</span> batch = txn.batch();
+        batch.delete(
+          AppConstants.tableTodoName,
+          where: <span class="hljs-string">'<span class="hljs-subst">${ToDo.guidColumn}</span> = ?'</span>, whereArgs: [paramObj?.guid],
+        );
+        results = <span class="hljs-keyword">await</span> batch.commit();
+      });
+      <span class="hljs-keyword">if</span> (results.first &gt; <span class="hljs-number">0</span>) {
+        <span class="hljs-keyword">var</span> deletingItemIndex = _appDbContextService.toDos.indexWhere((item) =&gt; item.guid == paramObj.guid);
+        <span class="hljs-keyword">if</span> (deletingItemIndex != <span class="hljs-number">-1</span>) {
+          _appDbContextService.toDos.removeAt(deletingItemIndex);
+          _toDosBehaviorSubject.add(_appDbContextService.toDos);
+        }
+        <span class="hljs-keyword">return</span> Future.value();
+      }
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'ToDoRepoService deletePost failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);    
+  }
+}
+</div></code></pre>
+<p>Then in <code>Home</code> component, edit the <code>build</code> method to implement swipe to delete:</p>
+<blockquote>
+<p><code>lib/components/home/home.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Home</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_HomeState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Home</span>&gt; </span>{
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      <span class="hljs-comment">// ...</span>
+      body: Center(
+        child: ListView.builder(
+          <span class="hljs-comment">// ...</span>
+          itemBuilder: (BuildContext context, <span class="hljs-built_in">int</span> index) {
+            ToDo item = _toDos[index];
+            <span class="hljs-keyword">return</span> Dismissible(
+              <span class="hljs-comment">// Each Dismissible must contain a Key. Keys allow Flutter to uniquely identify widgets.</span>
+              key: UniqueKey(), <span class="hljs-comment">// Or you can use Key(item?.guid.toString()),</span>
+              child: ListTile(
+                <span class="hljs-comment">// ...</span>
+              ),
+              <span class="hljs-comment">// Provide a function that tells the app what to do after an item has been swiped away.</span>
+              onDismissed: (direction) <span class="hljs-keyword">async</span> {
+                <span class="hljs-keyword">await</span> _toDoRepoService.deletePost(item);
+                <span class="hljs-comment">// Show a snackbar to indicate item deleted.</span>
+                Scaffold.of(context).showSnackBar(SnackBar(content: Text(<span class="hljs-string">'Item index <span class="hljs-subst">$index</span> deleted'</span>)));
+              },
+              <span class="hljs-comment">// Show a red background as the item is swiped away.</span>
+              background: Container(color: Colors.red,),
+            );
+          },
+        ),
+      ),
+      <span class="hljs-comment">// ...</span>
+  }
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<p>Run the app and try to swipe left/ right to delete item.</p>
+<h3 id="review-5">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Edited <code>ToDoRepoService</code> to support Read, Update and Delete operations.</li>
+<li>Created new component named <code>EditToDo</code> to update the item.</li>
+<li>Allowed users to toggle item as completed/ uncompleted.</li>
+<li>Allowed users to delete item by swiping left/ right.</li>
+</ul>
+<p>The next section, which is the last one, is to organize global variables in a class named <code>AppGlobals</code> and allow users to switch the theme between dark and light mode as an example of using global variables.</p>
+<h2 id="use-global-variables-and-switching-theme-between-light-dark-mode">Use global variables and switching theme between light/ dark mode.</h2>
+<p>In this section, I'm going to show you how to organize global variables in a class named <code>AppGlobals</code>. This class comes in handy when we want to share some variables globally in the entire app. Some of the examples of using global variables are that we can put into this class the data of user profile and app's settings which are shared across the entire app. I'm going to use the <code>Settings</code> tab component as the demo of this example. This component allows users to turn on/ off the dark mode and we'll keep this setting in a persistent store (local disk which is similar to cookies on web app) using a package named <code>shared_preferences</code>. Let's install it:</p>
+<blockquote>
+<p><code>pubspec.yaml</code></p>
+</blockquote>
+<pre><code class="language-yaml"><div><span class="hljs-string">//</span> <span class="hljs-string">...</span>
+<span class="hljs-attr">dependencies:</span>
+<span class="hljs-attr">  flutter:</span>
+<span class="hljs-attr">    sdk:</span> <span class="hljs-string">flutter</span>
+
+  <span class="hljs-string">//</span> <span class="hljs-string">...</span>
+<span class="hljs-attr">  shared_preferences:</span> <span class="hljs-number">0.5</span><span class="hljs-number">.7</span><span class="hljs-string">+1</span> <span class="hljs-comment"># Provide a persistent store for simple data.</span>
+<span class="hljs-string">//</span> <span class="hljs-string">...</span>
+</div></code></pre>
+<p>Then we need to make the following changes:</p>
+<ul>
+<li>Create a new class named <code>AppGlobals</code> with global stuffs and keep them in local storage.</li>
+<li>Update <code>main.dart</code> file to initialize some global stuffs in <code>AppGlobals</code> before running the app.</li>
+<li>Create a new service named <code>SettingRepoService</code> class to broadcast the setting's changes to the entire app.</li>
+<li>Update <code>AppInjections</code> class to register <code>SettingRepoService</code>.</li>
+<li>Update the <code>Settings</code> component to inject <code>SettingRepoService</code> and allow users to turn on/ off the dark mode.</li>
+<li>Convert <code>MyApp</code> from <code>stateless</code> component into <code>stateful</code> component and listen to the setting's changes.</li>
+</ul>
+<blockquote>
+<p><code>lib/app_globals.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-comment">// ...</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppGlobals</span> </span>{
+  <span class="hljs-keyword">static</span> SharedPreferences _localStorage;
+  <span class="hljs-keyword">static</span> SharedPreferences <span class="hljs-keyword">get</span> localStorage {
+    <span class="hljs-keyword">return</span> _localStorage;
+  }
+
+  <span class="hljs-keyword">static</span> <span class="hljs-built_in">bool</span> isDarkMode = localStorage.getBool(AppConstants.isDarkModeKey) ?? <span class="hljs-keyword">false</span>;
+  <span class="hljs-keyword">static</span> Future&lt;<span class="hljs-keyword">void</span>&gt; setIsDarkModeSettingInLocalStorage(<span class="hljs-built_in">bool</span> isDarkMode) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">await</span> localStorage.setBool(AppConstants.isDarkModeKey, isDarkMode);
+  }
+
+  <span class="hljs-keyword">static</span> Future init() <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">try</span> {
+      _localStorage = <span class="hljs-keyword">await</span> SharedPreferences.getInstance();
+    } <span class="hljs-keyword">catch</span> (e) {
+      debugPrint(<span class="hljs-string">'Exception in AppGlobals.init(). e is: <span class="hljs-subst">$e</span>'</span>);
+    }
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/main.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-comment">// ...</span>
+<span class="hljs-keyword">void</span> main() <span class="hljs-keyword">async</span> {
+  <span class="hljs-comment">// ...</span>
+  <span class="hljs-keyword">await</span> AppGlobals.init();
+  <span class="hljs-comment">// ...</span>
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/shared/data/repositories/setting_repo_service.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-keyword">import</span> <span class="hljs-string">'package:flutter/foundation.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:rxdart/rxdart.dart'</span>;
+<span class="hljs-keyword">import</span> <span class="hljs-string">'package:to_do_mobile_app/app_globals.dart'</span>;
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SettingRepoService</span> </span>{
+  BehaviorSubject _isDarkModeSettingBehaviorSubject = BehaviorSubject&lt;<span class="hljs-built_in">bool</span>&gt;();
+  Stream&lt;<span class="hljs-built_in">bool</span>&gt; <span class="hljs-keyword">get</span> isDarkModeSettingObservable =&gt; _isDarkModeSettingBehaviorSubject.asBroadcastStream();
+
+  Future toggleIsDarkMode({<span class="hljs-built_in">bool</span> isDarkMode = <span class="hljs-keyword">false</span>}) <span class="hljs-keyword">async</span> {
+    <span class="hljs-keyword">dynamic</span> error;
+
+    <span class="hljs-keyword">try</span> {
+      <span class="hljs-comment">// Save isDarkMode setting to local storage.</span>
+      <span class="hljs-keyword">await</span> AppGlobals.setIsDarkModeSettingInLocalStorage(isDarkMode);
+      _isDarkModeSettingBehaviorSubject.add(isDarkMode);
+      <span class="hljs-keyword">return</span> Future.value();
+    } <span class="hljs-keyword">catch</span> (e) {
+      error = e;
+      debugPrint(<span class="hljs-string">'SettingRepoService SettingRepoService failed. error is: <span class="hljs-subst">$error</span>'</span>);
+    }
+    <span class="hljs-keyword">return</span> Future.error(error);
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/app_injections.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AppInjections</span> </span>{
+  <span class="hljs-keyword">static</span> Future&lt;<span class="hljs-keyword">void</span>&gt; setupDI() <span class="hljs-keyword">async</span> {
+    <span class="hljs-comment">// ...</span>
+    getIt.registerSingletonAsync&lt;SettingRepoService&gt;(() <span class="hljs-keyword">async</span> =&gt; SettingRepoService());
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/components/settings/settings.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-comment">// ...</span>
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Settings</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_SettingsState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">Settings</span>&gt; </span>{
+  <span class="hljs-built_in">bool</span> _switchBtnValue = AppGlobals.isDarkMode;
+
+  <span class="hljs-comment">/* DI Services vars. */</span>
+  SettingRepoService _settingRepoService;
+
+  _SettingsState() {
+    <span class="hljs-comment">/* DI Services. */</span>
+    _settingRepoService = _settingRepoService ?? getIt&lt;SettingRepoService&gt;();
+  }
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> Scaffold(
+      appBar: AppBar(
+        title: Text(Settings.title),
+      ),
+      body: ListView(
+        children: &lt;Widget&gt;[
+          Card(
+            child: ListTile(
+              title: Text(<span class="hljs-string">'Dark mode'</span>),
+              trailing: Switch(
+                value: _switchBtnValue,
+                onChanged: (value) <span class="hljs-keyword">async</span> {
+                  _switchBtnValue = value;
+                  <span class="hljs-keyword">await</span> _settingRepoService.toggleIsDarkMode(isDarkMode: _switchBtnValue);
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+</div></code></pre>
+<blockquote>
+<p><code>lib/my_app.dart</code></p>
+</blockquote>
+<pre><code class="language-dart"><div><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyApp</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">StatefulWidget</span> </span>{
+  <span class="hljs-comment">// ...</span>
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">_MyAppState</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">State</span>&lt;<span class="hljs-title">MyApp</span>&gt; </span>{
+  StreamSubscription&lt;<span class="hljs-keyword">dynamic</span>&gt; _isDarkModeSettingObservableSubscriber;
+  <span class="hljs-built_in">bool</span> _isDarkMode = AppGlobals.isDarkMode;
+
+  <span class="hljs-comment">/* DI Services vars. */</span>
+  SettingRepoService _settingRepoService;
+
+  _MyAppState() {
+    <span class="hljs-comment">/* DI Services. */</span>
+    _settingRepoService = _settingRepoService ?? getIt&lt;SettingRepoService&gt;();
+  }
+
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> initState() {
+    <span class="hljs-keyword">super</span>.initState();
+    _isDarkModeSettingObservableSubscriber = _settingRepoService.isDarkModeSettingObservable.listen((isDarkMode) {
+      setState(() {
+        _isDarkMode = isDarkMode;
+      });
+    });
+  }
+
+  <span class="hljs-meta">@override</span>
+  Widget build(BuildContext context) {
+    <span class="hljs-keyword">return</span> MaterialApp(
+      <span class="hljs-comment">// ...</span>
+      theme: ThemeData(
+        brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+      ),
+      <span class="hljs-comment">// ...</span>
+    );
+  }
+
+  <span class="hljs-meta">@override</span>
+  <span class="hljs-keyword">void</span> dispose() {
+    <span class="hljs-keyword">super</span>.dispose();
+    _isDarkModeSettingObservableSubscriber.cancel();
+  }
+}
+</div></code></pre>
+<p>Run the app and try to enable dark mode in <code>Settings</code> page, you should see the dark theme applied. -&gt; Try to close and open the app again, you'll see the app still in dark theme as it keeps the setting value in persistent store using <code>shared_preferences</code>:</p>
+<p><img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/home-list-dark.png" alt="alt text" title="Title">
+<img src="file:////Volumes/MacData/CevoWorkspace/demo-apps/to_do_mobile_app/docs/images/screenshots/settings-dark.png" alt="alt text" title="Title"></p>
+<h3 id="review-6">Review.</h3>
+<p>What we have done so far:</p>
+<ul>
+<li>Created <code>AppGlobals</code> class to keep global variables.</li>
+<li>Allow users to toggle the light/ dark mode for the entire app in Settings page and keep this setting value in local storage using <code>shared_preferences</code> package.</li>
+</ul>
+<h2 id="conclusion">Conclusion.</h2>
+<p>Woa, finally we finish the app and I hope you enjoy this article. Please leave your comments if you think I can improve it better so that we can learn from each other. Thanks.</p>
+<hr>
+<h2 id="references">References:</h2>
+<ul>
+<li><a href="https://medium.com/flutter-community/flutter-best-practices-and-tips-7c2782c9ebb5">Flutter: Best Practices and Tips</a></li>
+<li><a href="https://coryrylan.com/blog/angular-observable-data-services">AngularAngular Observable Data Services</a></li>
+<li><a href="https://codelabs.developers.google.com/codelabs/flutter-cupertino/#0">Building a Cupertino app with Flutter</a></li>
+</ul>
+
+    </body>
+    </html>
