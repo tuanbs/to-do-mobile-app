@@ -47,6 +47,8 @@ This is the step-by-step instructions on how to create this app from scratch. Th
 ![alt text](./docs/images/screenshots/iOS-demo.gif "Title")
 ![alt text](./docs/images/screenshots/Android-demo.gif "Title")
 
+The source code and instruction article can be found on its [Github](https://github.com/tuanbs/to-do-mobile-app.git) and [CODE_FLOW.md](https://github.com/tuanbs/to-do-mobile-app/blob/master/CODE_FLOW.md) file.
+
 ## Introduction.
 
 Welcome to my first article on how to write a cross-platform mobile app using `Flutter`. -> What is `Flutter`? -> Please check [here](https://flutter.dev/docs) to learn about it. -> In my words, it's a framework used to create cross-platform app (iOS, Android and Website). It's similar to `React Native` or `Ionic` frameworks if you've heard of them before.
